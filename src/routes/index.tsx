@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { MealRecommendations } from "@/components/meal-recommendations";
 import hero from "@/assets/hero-picanha.jpg";
 import logo from "@/assets/carina-logo.png";
 import espetinhos from "@/assets/espetinhos.jpg";
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Carina Farias — Churrasco na brasa com entrega" },
-      { name: "description", content: "Picanha, espetinhos, marmitas e bebidas geladas. Peça agora e receba em casa." },
+      { name: "description", content: "Churrascos e sucos da Carina Farias. Escolha suas preferências e receba sugestões de combinações para pedir." },
       { property: "og:title", content: "Carina Farias — Churrascaria" },
       { property: "og:description", content: "Churrasco na brasa que dá água na boca. Peça com entrega ou retirada." },
       { property: "og:type", content: "website" },
@@ -37,7 +38,12 @@ function Index() {
   const [order, setOrder] = useState<Order | null>(null);
 
   const add = (id: string, d: number) => setCart((c) => { const n = Math.max(0, (c[id] ?? 0) + d); const x = { ...c, [id]: n }; if (!n) delete x[id]; return x; });
-  const lines = useMemo(() => Object.entries(cart).map(([id, qty]) => ({ item: MENU.find((m) => m.id === id)!, qty })), [cart]);
+  const lines = useMemo(() => Object.entries(cart).flatMap(([id, qty]) => { const item = MENU.find((m) => m.id === id); return item ? [{ item, qty }] : []; }), [cart]);
+  const addCombination = (items: { id: string; qty: number }[]) => setCart((current) => {
+    const next = { ...current };
+    for (const item of items) if (MENU.some((entry) => entry.id === item.id)) next[item.id] = (next[item.id] ?? 0) + item.qty;
+    return next;
+  });
   const count = lines.reduce((s, l) => s + l.qty, 0);
   const subtotal = lines.reduce((s, l) => s + l.qty * l.item.price, 0);
   const fee = mode === "entrega" && subtotal > 0 ? DELIVERY_FEE : 0;
@@ -47,7 +53,7 @@ function Index() {
     setOrder({
       id: Math.floor(1000 + Math.random() * 9000),
       items: lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })),
-      mode, ...form, payment: PAYMENT_METHODS.find((p) => p.id === payment)!.label,
+      mode, ...form, payment: PAYMENT_METHODS.find((p) => p.id === payment)?.label ?? "",
       subtotal, fee, total: subtotal + fee, date: new Date().toLocaleString("pt-BR"),
     });
     setCart({}); setOpen(false);
@@ -75,14 +81,12 @@ function Index() {
         <div className="relative mx-auto w-full max-w-6xl px-5 pb-16 pt-32">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-gold">Direto da brasa pra sua mesa</p>
           <h1 className="font-display text-7xl leading-[0.9] md:text-9xl">O churrasco que<br /><span className="text-ember">dá água na boca</span></h1>
-          <p className="mt-5 max-w-md text-lg text-muted-foreground">Picanha suculenta, espetinhos no ponto e marmitas caprichadas. Peça em segundos — entrega ou retirada.</p>
+          <p className="mt-5 max-w-md text-lg text-muted-foreground">Carne, calabresa e frango na brasa com seu suco favorito. Peça em segundos — entrega ou retirada.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#cardapio" className="rounded-full bg-ember px-8 py-4 text-lg font-bold text-primary-foreground shadow-ember transition hover:scale-105">Pedir agora</a>
             <a href="#cardapio" className="rounded-full border border-foreground/30 px-8 py-4 text-lg font-semibold backdrop-blur">Ver cardápio</a>
           </div>
           <div className="mt-10 flex gap-8 text-sm text-muted-foreground">
-            <div><b className="font-display text-3xl text-foreground">130+</b><br />churrascos/dia</div>
-            <div><b className="font-display text-3xl text-foreground">30min</b><br />entrega média</div>
             <div><b className="font-display text-3xl text-foreground">100%</b><br />na brasa</div>
           </div>
         </div>
@@ -100,10 +104,11 @@ function Index() {
       </section>
 
       {/* Menu */}
+      <MealRecommendations onAdd={addCombination} />
       <section id="cardapio" className="mx-auto max-w-6xl scroll-mt-20 px-5 pb-32">
         <h2 className="font-display text-6xl">Cardápio</h2>
         <div className="sticky top-14 z-20 -mx-5 mt-4 flex gap-2 overflow-x-auto bg-background/90 px-5 py-3 backdrop-blur">
-          {CATEGORIES.map((c) => (
+          {CATEGORIES.filter((category) => MENU.some((item) => item.category === category)).map((c) => (
             <button key={c} onClick={() => setCat(c)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${cat === c ? "bg-ember text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{c}</button>
           ))}
         </div>
