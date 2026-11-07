@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import hero from "@/assets/hero-picanha.jpg";
+import logo from "@/assets/carina-logo.png";
 import espetinhos from "@/assets/espetinhos.jpg";
 import prato from "@/assets/prato.jpg";
 import bebidas from "@/assets/bebidas.jpg";
@@ -9,9 +10,9 @@ import { CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Churrascaria do Michel — Churrasco na brasa com entrega" },
+      { title: "Carina Farias — Churrasco na brasa com entrega" },
       { name: "description", content: "Picanha, espetinhos, marmitas e bebidas geladas. Peça agora e receba em casa." },
-      { property: "og:title", content: "Churrascaria do Michel" },
+      { property: "og:title", content: "Carina Farias — Churrascaria" },
       { property: "og:description", content: "Churrasco na brasa que dá água na boca. Peça com entrega ou retirada." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -57,7 +58,10 @@ function Index() {
       {/* Header */}
       <header className="fixed inset-x-0 top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-          <span className="font-display text-2xl tracking-wide">Churrascaria <span className="text-ember">do Michel</span></span>
+          <span className="flex items-center gap-2">
+            <img src={logo} alt="Carina Farias" width={1024} height={1024} className="h-10 w-10 rounded-full object-contain" />
+            <span className="font-display text-2xl tracking-wide">Carina <span className="text-ember">Farias</span></span>
+          </span>
           <button onClick={() => setOpen(true)} className="relative rounded-full bg-ember px-4 py-2 text-sm font-bold text-primary-foreground shadow-ember">
             Carrinho {count > 0 && <span className="ml-1 rounded-full bg-background px-2 text-foreground">{count}</span>}
           </button>
@@ -66,7 +70,7 @@ function Index() {
 
       {/* Hero */}
       <section className="relative flex min-h-[100svh] items-end overflow-hidden">
-        <img src={hero} alt="Picanha fatiada na brasa" width={1088} height={1600} className="absolute inset-0 h-full w-full object-cover scale-105 animate-in fade-in zoom-in-110 duration-1000" />
+        <img src={hero} alt="Carnes na brasa da churrascaria Carina Farias" width={1088} height={1600} className="absolute inset-0 h-full w-full object-cover scale-105 animate-in fade-in zoom-in-110 duration-1000" />
         <div className="absolute inset-0 bg-fade" />
         <div className="relative mx-auto w-full max-w-6xl px-5 pb-16 pt-32">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-gold">Direto da brasa pra sua mesa</p>
@@ -128,7 +132,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">© Churrascaria do Michel</footer>
+      <footer className="border-t py-8 text-center text-sm text-muted-foreground">© Carina Farias — Churrascaria</footer>
 
       {count > 0 && !open && (
         <button onClick={() => setOpen(true)} className="fixed inset-x-5 bottom-5 z-30 mx-auto max-w-md rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember">
@@ -191,7 +195,7 @@ function Index() {
           <div className="w-full max-w-sm rounded-xl bg-card p-5">
             <h2 className="font-display text-4xl text-ember">Pedido recebido! 🔥</h2>
             <div id="receipt" className="mt-4 rounded-lg border bg-background p-4 font-mono text-xs">
-              <p className="text-center font-bold">CHURRASCARIA DO MICHEL</p>
+              <p className="text-center font-bold">CARINA FARIAS — CHURRASCARIA</p>
               <p className="text-center">Pedido #{order.id} — {order.date}</p>
               <p>--------------------------------</p>
               {order.items.map((i) => <p key={i.name} className="flex justify-between"><span>{i.qty}x {i.name}</span><span>{brl(i.qty * i.price)}</span></p>)}
