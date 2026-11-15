@@ -4,17 +4,17 @@ import { MealRecommendations } from "@/components/meal-recommendations";
 import hero from "@/assets/hero-picanha.jpg";
 import logoAsset from "@/assets/carina-original-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
-const logo = logoAsset.url;
 import espetinhos from "@/assets/espetinhos.jpg";
 import prato from "@/assets/prato.jpg";
 import bebidas from "@/assets/bebidas.jpg";
 import { ADDRESS, CONTACT, CONTACT_URL, CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type Category, type PaymentMethod } from "@/lib/menu";
+const logo = logoAsset.url;
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Carina Farias — Churrasco na brasa com entrega" },
-      { name: "description", content: "Churrascos e sucos da Carina Farias. Escolha suas preferências e receba sugestões de combinações para pedir." },
+      { title: "Carina Farias — Churrascaria & Lanchonete no Jurunas" },
+      { name: "description", content: "Cardápio da Carina Farias: churrascos, lanches, sopa, sucos de 400ml e refrigerantes no Jurunas. Consulte a loja pelo WhatsApp." },
       { property: "og:title", content: "Carina Farias — Churrascaria" },
       { property: "og:description", content: "Churrasco na brasa que dá água na boca. Peça com entrega ou retirada." },
       { property: "og:type", content: "website" },
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
 });
 
 const catImg: Partial<Record<Category, string>> = {
-  Churrasco: prato, Espetinhos: espetinhos, Acompanhamentos: prato, Sucos: bebidas, Refrigerantes: bebidas, Água: bebidas, Sobremesas: prato, Lanches: prato, Sopas: prato,
+  Churrasco: prato, Espetinhos: espetinhos, Acompanhamentos: prato, Sucos: bebidas, Refrigerantes: bebidas, Água: bebidas, Sobremesas: prato,
 };
 
 type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string };
@@ -67,7 +67,7 @@ function Index() {
       <header className="fixed inset-x-0 top-0 z-30 border-b border-border/50 bg-background/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <span className="flex items-center gap-2">
-            <img src={logo} alt="Carina Farias" width={1024} height={1024} className="h-10 w-10 rounded-full object-contain" />
+            <img src={logo} alt="Churrascaria e Lanchonete da Carina" width={200} height={140} className="h-12 w-16 object-contain" />
             <span className="font-display text-2xl tracking-wide">Carina <span className="text-ember">Farias</span></span>
           </span>
           <button onClick={() => setOpen(true)} className="relative rounded-full bg-ember px-4 py-2 text-sm font-bold text-primary-foreground shadow-ember">
@@ -82,11 +82,12 @@ function Index() {
         <div className="absolute inset-0 bg-fade" />
         <div className="relative mx-auto w-full max-w-6xl px-5 pb-16 pt-32">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-gold">Direto da brasa pra sua mesa</p>
-          <h1 className="font-display text-7xl leading-[0.9] md:text-9xl">O churrasco que<br /><span className="text-ember">dá água na boca</span></h1>
-          <p className="mt-5 max-w-md text-lg text-muted-foreground">Carne, calabresa e frango na brasa com seu suco favorito. Peça em segundos — entrega ou retirada.</p>
+          <h1 className="font-display text-7xl leading-[0.9] md:text-9xl">Carina<br /><span className="text-ember">Farias</span></h1>
+          <p className="mt-5 max-w-md text-lg text-muted-foreground">Churrascaria &amp; Lanchonete. Carne, calabresa e frango na brasa, lanches e sopa da Carina.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#cardapio" className="rounded-full bg-ember px-8 py-4 text-lg font-bold text-primary-foreground shadow-ember transition hover:scale-105">Pedir agora</a>
             <a href="#cardapio" className="rounded-full border border-foreground/30 px-8 py-4 text-lg font-semibold backdrop-blur">Ver cardápio</a>
+            <Button asChild variant="outline" size="lg"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">Falar com a Carina</a></Button>
           </div>
           <div className="mt-10 flex gap-8 text-sm text-muted-foreground">
             <div><b className="font-display text-3xl text-foreground">100%</b><br />na brasa</div>
@@ -117,7 +118,7 @@ function Index() {
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {MENU.filter((m) => m.category === cat).map((m) => (
             <div key={m.id} className="flex gap-4 rounded-xl border bg-card p-3">
-              <img src={catImg[m.category]} alt={m.name} loading="lazy" width={1024} height={768} className="h-24 w-24 shrink-0 rounded-lg object-cover" />
+              {catImg[m.category] && <img src={catImg[m.category]} alt={m.name} loading="lazy" width={1024} height={768} className="h-24 w-24 shrink-0 rounded-lg object-cover" />}
               <div className="flex flex-1 flex-col">
                 <h3 className="font-bold">{m.name}</h3>
                 <p className="text-sm text-muted-foreground">{m.desc}</p>
