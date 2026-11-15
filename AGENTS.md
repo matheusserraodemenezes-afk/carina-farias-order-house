@@ -12,3 +12,4 @@
 - Keep recommendations in a public, validated TanStack server function using AI Gateway; customers can request suggestions without creating an account.
 - Use the shared menu for recommendations and checkout, and validate model item IDs, quantities and totals before rendering; AI must not control prices or add unlisted products.
 - Keep preference and output validation in a client-safe pure module with focused unit tests; model calls remain inside server execution boundaries.
+- Restrict meal recommendation candidates to main dishes and juices, excluding unrelated menu categories so new catalog entries cannot silently alter the combination rules.
