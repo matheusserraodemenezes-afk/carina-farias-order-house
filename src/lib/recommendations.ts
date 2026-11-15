@@ -22,6 +22,7 @@ export const suggestionsSchema = z.object({
 const normalized = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 export function eligibleMenu(preferences: Preferences) {
   return MENU.filter((item) => {
+    if (item.category !== "Churrasco" && item.category !== "Sucos") return false;
     const name = normalized(item.name);
     if (preferences.avoid.some((avoid) => name.includes(normalized(avoid)))) return false;
     if (item.category === "Churrasco" && preferences.meat !== "Qualquer" && !name.includes(normalized(preferences.meat))) return false;

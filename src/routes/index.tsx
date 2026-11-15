@@ -2,11 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { MealRecommendations } from "@/components/meal-recommendations";
 import hero from "@/assets/hero-picanha.jpg";
-import logo from "@/assets/carina-logo.png";
+import logoAsset from "@/assets/carina-original-logo.jpg.asset.json";
+import { Button } from "@/components/ui/button";
+const logo = logoAsset.url;
 import espetinhos from "@/assets/espetinhos.jpg";
 import prato from "@/assets/prato.jpg";
 import bebidas from "@/assets/bebidas.jpg";
-import { CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type Category, type PaymentMethod } from "@/lib/menu";
+import { ADDRESS, CONTACT, CONTACT_URL, CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type Category, type PaymentMethod } from "@/lib/menu";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/")({
 });
 
 const catImg: Partial<Record<Category, string>> = {
-  Churrasco: prato, Espetinhos: espetinhos, Acompanhamentos: prato, Sucos: bebidas, Refrigerantes: bebidas, Água: bebidas, Sobremesas: prato,
+  Churrasco: prato, Espetinhos: espetinhos, Acompanhamentos: prato, Sucos: bebidas, Refrigerantes: bebidas, Água: bebidas, Sobremesas: prato, Lanches: prato, Sopas: prato,
 };
 
 type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string };
@@ -137,7 +139,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">© Carina Farias — Churrascaria</footer>
+      <footer className="border-t px-5 py-8 text-center text-sm text-muted-foreground"><p>© Carina Farias — Churrascaria &amp; Lanchonete</p><p className="mt-2">{ADDRESS}</p><Button asChild variant="outline" className="mt-4"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button><p className="mt-3">Água: consulte disponibilidade e preço pelo WhatsApp.</p></footer>
 
       {count > 0 && !open && (
         <button onClick={() => setOpen(true)} className="fixed inset-x-5 bottom-5 z-30 mx-auto max-w-md rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember">
