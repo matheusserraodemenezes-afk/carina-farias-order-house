@@ -8,6 +8,6 @@ export function cartSuggestions(cart: Record<string, number>) {
   const preferredIds = hasFood ? ["s1", "r5", "s2", "r4", "l3", "sp1"] : ["c8", "l21", "sp1", "l3"];
   return preferredIds.flatMap((id) => {
     const item = MENU.find((entry) => entry.id === id);
-    return item && !(cart[id] > 0) ? [item] : [];
+    return item && !((cart[id] ?? 0) > 0) ? [item] : [];
   }).slice(0, 4);
 }
