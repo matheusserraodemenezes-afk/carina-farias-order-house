@@ -1,4 +1,5 @@
 # Recomendações do cardápio
+- [ ] Adicionar entrada de vendas, combinações populares e sugestões de promoções por IA, sem ativar descontos automaticamente.
 - [x] Mostrar produtos complementares e permitir explorar categorias dentro do carrinho, sem sair do pedido.
 - [x] Usar o cardápio oficial nas sugestões e no carrinho.
 - [x] Adicionar preferências e recomendações via AI Gateway.
