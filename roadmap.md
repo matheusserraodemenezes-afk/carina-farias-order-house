@@ -1,5 +1,5 @@
 # Recomendações do cardápio
-- [ ] Mostrar produtos complementares e permitir explorar categorias dentro do carrinho, sem sair do pedido.
+- [x] Mostrar produtos complementares e permitir explorar categorias dentro do carrinho, sem sair do pedido.
 - [x] Usar o cardápio oficial nas sugestões e no carrinho.
 - [x] Adicionar preferências e recomendações via AI Gateway.
 - [ ] Verificar resposta de IA até o carrinho: bloqueado por payment_required; validação, aviso de indisponibilidade e carrinho manual verificados.
