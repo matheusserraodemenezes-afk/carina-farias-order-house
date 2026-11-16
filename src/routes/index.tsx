@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { MealRecommendations } from "@/components/meal-recommendations";
+import { CartExtras } from "@/components/cart-extras";
 import hero from "@/assets/hero-picanha.jpg";
 import logoAsset from "@/assets/carina-original-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
@@ -163,6 +164,8 @@ function Index() {
                 </div>
               </div>
             ))}
+
+            {lines.length > 0 && <CartExtras cart={cart} onChange={add} />}
 
             <h3 className="mt-6 font-bold">Modalidade</h3>
             <div className="mt-2 grid grid-cols-2 gap-2">
