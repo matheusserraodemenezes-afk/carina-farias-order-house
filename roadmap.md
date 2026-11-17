@@ -1,4 +1,5 @@
 # Recomendações do cardápio
+- [ ] Colocar imagens ilustrativas realistas por produto no cardápio e carrinho, preservando preços e ingredientes.
 - [x] Adicionar entrada de vendas, métricas e combinações populares; cálculos, celular e aviso de indisponibilidade verificados.
 - [ ] Verificar sugestões de promoções geradas pela IA: bloqueado por payment_required; integração e validação prontas, sem ativar descontos automaticamente.
 - [x] Mostrar produtos complementares e permitir explorar categorias dentro do carrinho, sem sair do pedido.
