@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { MealRecommendations } from "@/components/meal-recommendations";
 import { CartExtras } from "@/components/cart-extras";
+import { productImages } from "@/lib/product-images";
 import hero from "@/assets/hero-picanha.jpg";
 import logoAsset from "@/assets/carina-original-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
@@ -24,10 +25,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const catImg: Partial<Record<Category, string>> = {
-  Churrasco: prato, Espetinhos: espetinhos, Acompanhamentos: prato, Sucos: bebidas, Refrigerantes: bebidas, Água: bebidas, Sobremesas: prato,
-};
 
 type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string };
 
@@ -111,33 +108,38 @@ function Index() {
       <MealRecommendations onAdd={addCombination} />
       <section id="cardapio" className="mx-auto max-w-6xl scroll-mt-20 px-5 pb-32">
         <h2 className="font-display text-6xl">Cardápio</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Imagens ilustrativas geradas por IA. A apresentação dos produtos e as embalagens podem variar.</p>
         <div className="sticky top-14 z-20 -mx-5 mt-4 flex gap-2 overflow-x-auto bg-background/90 px-5 py-3 backdrop-blur">
           {CATEGORIES.filter((category) => MENU.some((item) => item.category === category)).map((c) => (
             <button key={c} onClick={() => setCat(c)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${cat === c ? "bg-ember text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{c}</button>
           ))}
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {MENU.filter((m) => m.category === cat).map((m) => (
-            <div key={m.id} className="flex gap-4 rounded-xl border bg-card p-3">
-              {catImg[m.category] && <img src={catImg[m.category]} alt={m.name} loading="lazy" width={1024} height={768} className="h-24 w-24 shrink-0 rounded-lg object-cover" />}
-              <div className="flex flex-1 flex-col">
+            <article key={m.id} data-product-id={m.id} className="flex overflow-hidden rounded-lg border bg-card flex-col">
+              <img src={productImages[m.id]} alt={`Imagem ilustrativa: ${m.name}`} loading="lazy" width={640} height={640} className={`aspect-[4/3] w-full ${m.category === "Refrigerantes" || m.category === "Sucos" ? "object-contain bg-secondary" : "object-cover"}`} />
+              <div className="flex min-w-0 flex-1 flex-col p-4">
                 <h3 className="font-bold">{m.name}</h3>
                 <p className="text-sm text-muted-foreground">{m.desc}</p>
                 <div className="mt-auto flex items-center justify-between pt-2">
                   <span className="font-display text-2xl text-gold">{brl(m.price)}</span>
                   {cart[m.id] ? (
                     <div className="flex items-center gap-3">
-                      <button onClick={() => add(m.id, -1)} className="h-8 w-8 rounded-full bg-secondary font-bold">−</button>
+                      <Button size="icon" variant="secondary" aria-label={`Remover uma unidade de ${m.name}`} onClick={() => add(m.id, -1)} className="size-8">−</Button>
                       <span className="font-bold">{cart[m.id]}</span>
-                      <button onClick={() => add(m.id, 1)} className="h-8 w-8 rounded-full bg-ember font-bold text-primary-foreground">+</button>
+                      <Button size="icon" aria-label={`Adicionar ${m.name}`} onClick={() => add(m.id, 1)} className="size-8">+</Button>
                     </div>
                   ) : (
-                    <button onClick={() => add(m.id, 1)} className="rounded-full bg-ember px-4 py-1.5 text-sm font-bold text-primary-foreground">Adicionar</button>
+                    <Button size="sm" aria-label={`Adicionar ${m.name}`} onClick={() => add(m.id, 1)}>Adicionar</Button>
                   )}
                 </div>
               </div>
-            </div>
+            </article>
           ))}
+        </div>
+        <div className="mt-8 flex items-center gap-4 border-t pt-6">
+          <img src={productImages.water} alt="Imagem ilustrativa de água mineral" loading="lazy" width={384} height={384} className="size-24 shrink-0 rounded-lg object-contain bg-secondary" />
+          <div className="min-w-0"><h3 className="font-bold">Água</h3><p className="mt-1 text-sm text-muted-foreground">Consulte disponibilidade e preço com a loja.</p><Button asChild size="sm" variant="outline" className="mt-3"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">Consultar no WhatsApp</a></Button></div>
         </div>
       </section>
 
@@ -156,9 +158,10 @@ function Index() {
             <div className="flex items-center justify-between"><h2 className="font-display text-4xl">Seu pedido</h2><button onClick={() => setOpen(false)} className="text-2xl">×</button></div>
             {!lines.length && <p className="mt-6 text-muted-foreground">Carrinho vazio.</p>}
             {lines.map((l) => (
-              <div key={l.item.id} className="flex items-center justify-between border-b py-3">
-                <div><p className="font-semibold">{l.item.name}</p><p className="text-sm text-muted-foreground">{brl(l.item.price)}</p></div>
-                <div className="flex items-center gap-3">
+              <div key={l.item.id} className="flex items-center justify-between gap-3 border-b py-3">
+                <img src={productImages[l.item.id]} alt={`Imagem ilustrativa: ${l.item.name}`} loading="lazy" width={64} height={64} className="size-14 shrink-0 rounded-md object-cover" />
+                <div className="min-w-0 flex-1"><p className="font-semibold">{l.item.name}</p><p className="text-sm text-muted-foreground">{brl(l.item.price)}</p></div>
+                <div className="flex shrink-0 items-center gap-3">
                   <button onClick={() => add(l.item.id, -1)} className="h-7 w-7 rounded-full bg-secondary">−</button>{l.qty}
                   <button onClick={() => add(l.item.id, 1)} className="h-7 w-7 rounded-full bg-secondary">+</button>
                 </div>

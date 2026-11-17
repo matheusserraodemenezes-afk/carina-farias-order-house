@@ -3,6 +3,7 @@ import { Plus, Minus, ChevronDown, ChevronUp, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MENU, CATEGORIES, brl, type Category } from "@/lib/menu";
 import { cartSuggestions } from "@/lib/cart-suggestions";
+import { productImages } from "@/lib/product-images";
 
 export function CartExtras({ cart, onChange }: { cart: Record<string, number>; onChange: (id: string, delta: number) => void }) {
   const [browse, setBrowse] = useState(false);
@@ -28,10 +29,11 @@ export function CartExtras({ cart, onChange }: { cart: Record<string, number>; o
       </div>}
       <div className={`mt-3 ${browse ? "max-h-72 overflow-y-auto" : ""}`}>
         {items.map((item) => <div key={item.id} className="flex items-center justify-between gap-3 border-b border-border/50 py-3 last:border-0" data-extra-id={item.id}>
+          <img src={productImages[item.id]} alt={`Imagem ilustrativa: ${item.name}`} loading="lazy" width={64} height={64} className="size-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0 flex-1"><p className="text-sm font-semibold">{item.name}</p><p className="text-xs text-muted-foreground">{item.category === "Sucos" ? item.desc : item.category}</p><p className="mt-1 text-sm font-bold text-gold">{brl(item.price)}</p></div>
           <div className="flex shrink-0 items-center gap-2">
-            {(cart[item.id] ?? 0) > 0 && <><Button size="icon" variant="secondary" aria-label={`Remover uma unidade de ${item.name}`} onClick={() => onChange(item.id, -1)}><Minus /></Button><span className="w-5 text-center text-sm font-bold">{cart[item.id]}</span></>}
-            <Button size="icon" aria-label={`Adicionar ${item.name}`} title={`Adicionar ${item.name}`} onClick={() => { onChange(item.id, 1); setLastAdded(item.name); }}><Plus /></Button>
+            {(cart[item.id] ?? 0) > 0 && <><Button size="icon" className="size-8" variant="secondary" aria-label={`Remover uma unidade de ${item.name}`} onClick={() => onChange(item.id, -1)}><Minus /></Button><span className="w-4 text-center text-sm font-bold">{cart[item.id]}</span></>}
+            <Button size="icon" className="size-8" aria-label={`Adicionar ${item.name}`} title={`Adicionar ${item.name}`} onClick={() => { onChange(item.id, 1); setLastAdded(item.name); }}><Plus /></Button>
           </div>
         </div>)}
       </div>
