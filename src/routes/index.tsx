@@ -138,7 +138,7 @@ function Index() {
           ))}
         </div>
         <div className="mt-8 flex items-center gap-4 border-t pt-6">
-          <img src={productImages.water} alt="Imagem ilustrativa de água mineral" loading="lazy" width={384} height={384} className="size-24 shrink-0 rounded-lg object-contain bg-secondary" />
+          <img src={productImages["water"]} alt="Imagem ilustrativa de água mineral" loading="lazy" width={384} height={384} className="size-24 shrink-0 rounded-lg object-contain bg-secondary" />
           <div className="min-w-0"><h3 className="font-bold">Água</h3><p className="mt-1 text-sm text-muted-foreground">Consulte disponibilidade e preço com a loja.</p><Button asChild size="sm" variant="outline" className="mt-3"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">Consultar no WhatsApp</a></Button></div>
         </div>
       </section>
