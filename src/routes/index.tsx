@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { MealRecommendations } from "@/components/meal-recommendations";
 import { CartExtras } from "@/components/cart-extras";
@@ -9,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import espetinhos from "@/assets/espetinhos.jpg";
 import prato from "@/assets/prato.jpg";
 import bebidas from "@/assets/bebidas.jpg";
+import { createOrder } from "@/lib/orders.functions";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { ADDRESS, CONTACT, CONTACT_URL, CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type Category, type PaymentMethod } from "@/lib/menu";
 const logo = logoAsset.url;
 
@@ -26,7 +29,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string };
+type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string; saved: boolean };
 
 function Index() {
   const [cat, setCat] = useState<Category>("Churrasco");
@@ -36,6 +39,8 @@ function Index() {
   const [payment, setPayment] = useState<PaymentMethod>("pix");
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [order, setOrder] = useState<Order | null>(null);
+  const [busy, setBusy] = useState(false);
+  const saveOrder = useServerFn(createOrder);
 
   const add = (id: string, d: number) => setCart((c) => { const n = Math.max(0, (c[id] ?? 0) + d); const x = { ...c, [id]: n }; if (!n) delete x[id]; return x; });
   const lines = useMemo(() => Object.entries(cart).flatMap(([id, qty]) => { const item = MENU.find((m) => m.id === id); return item ? [{ item, qty }] : []; }), [cart]);
@@ -48,15 +53,24 @@ function Index() {
   const subtotal = lines.reduce((s, l) => s + l.qty * l.item.price, 0);
   const fee = mode === "entrega" && subtotal > 0 ? DELIVERY_FEE : 0;
 
-  const submit = () => {
+  const submit = async () => {
+    if (busy) return;
     if (!lines.length || !form.name || !form.phone || (mode === "entrega" && !form.address)) return alert("Preencha nome, telefone e endereço.");
+    setBusy(true);
+    // Se o registro no sistema falhar, o pedido NÃO se perde: a nota abre igual e o cliente envia pelo WhatsApp.
+    let id = Math.floor(1000 + Math.random() * 9000);
+    let saved = false;
+    try {
+      const result = await saveOrder({ data: { mode, name: form.name, phone: form.phone, address: mode === "entrega" ? form.address : "", payment, items: lines.map((l) => ({ id: l.item.id, qty: l.qty })) } });
+      id = result.number; saved = true;
+    } catch (error) { console.error("Pedido não registrado:", error); }
     setOrder({
-      id: Math.floor(1000 + Math.random() * 9000),
+      id, saved,
       items: lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })),
       mode, ...form, payment: PAYMENT_METHODS.find((p) => p.id === payment)?.label ?? "",
       subtotal, fee, total: subtotal + fee, date: new Date().toLocaleString("pt-BR"),
     });
-    setCart({}); setOpen(false);
+    setCart({}); setOpen(false); setBusy(false);
   };
 
   return (
@@ -198,7 +212,7 @@ function Index() {
               <div className="flex justify-between"><span>Taxa de entrega</span><span>{brl(fee)}</span></div>
               <div className="flex justify-between font-display text-3xl"><span>Total</span><span className="text-gold">{brl(subtotal + fee)}</span></div>
             </div>
-            <button onClick={submit} className="mt-4 w-full rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember">Finalizar pedido</button>
+            <button onClick={submit} disabled={busy} className="mt-4 w-full rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember disabled:opacity-60">{busy ? "Enviando pedido..." : "Finalizar pedido"}</button>
           </div>
         </div>
       )}
@@ -223,7 +237,9 @@ function Index() {
               {order.mode === "entrega" && <p>End.: {order.address}</p>}
               <p>Pagamento: {order.payment}</p>
             </div>
+            {!order.saved && <p role="alert" className="mt-3 text-xs text-destructive">Não conseguimos registrar o pedido no sistema agora. Envie pelo WhatsApp para garantir que a loja receba.</p>}
             <div className="mt-4 grid grid-cols-2 gap-2">
+              <a href={whatsappUrl({ number: order.id, mode: order.mode, name: order.name, phone: order.phone, address: order.address, payment: order.payment, items: order.items, subtotal: order.subtotal, fee: order.fee, total: order.total })} target="_blank" rel="noopener noreferrer" className="col-span-2 rounded-full bg-green-600 py-3 text-center font-bold text-white">📲 Enviar pedido pelo WhatsApp</a>
               <button onClick={() => window.print()} className="rounded-full bg-ember py-3 font-bold text-primary-foreground">🖨️ Imprimir nota</button>
               <button onClick={() => setOrder(null)} className="rounded-full border py-3 font-semibold">Fechar</button>
             </div>
