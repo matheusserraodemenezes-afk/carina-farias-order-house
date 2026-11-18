@@ -31,9 +31,9 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; paymentId: PaymentId; changeFor: number | null; subtotal: number; fee: number; total: number; date: string; saved: boolean };
+type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; paymentId: PaymentId; changeFor: number | null; trackingId: string | undefined; subtotal: number; fee: number; total: number; date: string; saved: boolean };
 
-const orderWhatsApp = (order: Order) => whatsappUrl({ number: order.id, mode: order.mode, name: order.name, phone: order.phone, address: order.address, payment: order.payment, paymentStatus: PAYMENT_STATUS_LABELS.pendente, notes: order.changeFor ? `Troco para ${brl(order.changeFor)}` : undefined, items: order.items, subtotal: order.subtotal, fee: order.fee, total: order.total });
+const orderWhatsApp = (order: Order) => whatsappUrl({ number: order.id, mode: order.mode, name: order.name, phone: order.phone, address: order.address, payment: order.payment, paymentStatus: PAYMENT_STATUS_LABELS.pendente, notes: order.changeFor ? `Troco para ${brl(order.changeFor)}` : undefined, trackingUrl: order.trackingId ? `${window.location.origin}/pedido/${order.trackingId}` : undefined, items: order.items, subtotal: order.subtotal, fee: order.fee, total: order.total });
 
 function Index() {
   const [cat, setCat] = useState<Category>("Churrasco");
@@ -69,12 +69,13 @@ function Index() {
     // Se o registro no sistema falhar, o pedido NÃO se perde: a nota abre igual e o cliente envia pelo WhatsApp.
     let id = Math.floor(1000 + Math.random() * 9000);
     let saved = false;
+    let trackingId: string | undefined;
     try {
       const result = await saveOrder({ data: { mode, name: form.name, phone: form.phone, address: mode === "entrega" ? form.address : "", payment, changeFor, items: lines.map((l) => ({ id: l.item.id, qty: l.qty })) } });
-      id = result.number; saved = true;
+      id = result.number; saved = true; trackingId = result.id;
     } catch (error) { console.error("Pedido não registrado:", error); }
     const placed: Order = {
-      id, saved, paymentId: payment, changeFor,
+      id, saved, trackingId, paymentId: payment, changeFor,
       items: lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })),
       mode, ...form, payment: paymentLabel(payment),
       subtotal, fee, total: subtotal + fee, date: new Date().toLocaleString("pt-BR"),
@@ -251,6 +252,7 @@ function Index() {
             </div>
             {order.paymentId === "pix" && <div className="mt-3"><PixPayment amount={order.total} reference={`Pedido ${order.id}`} /></div>}
             {!order.saved && <p role="alert" className="mt-3 text-xs text-destructive">Não conseguimos registrar o pedido no sistema agora. Envie pelo WhatsApp para garantir que a loja receba.</p>}
+            {order.trackingId && <Link to="/pedido/$id" params={{ id: order.trackingId }} className="mt-3 block rounded-full border border-primary py-3 text-center font-bold text-primary">📍 Acompanhar pedido</Link>}
             <div className="mt-4 grid grid-cols-2 gap-2">
               <a href={orderWhatsApp(order)} target="_blank" rel="noopener noreferrer" className="col-span-2 rounded-full bg-green-600 py-3 text-center font-bold text-white">📲 Enviar pedido pelo WhatsApp</a>
               <button onClick={() => window.print()} className="rounded-full bg-ember py-3 font-bold text-primary-foreground">🖨️ Imprimir nota</button>

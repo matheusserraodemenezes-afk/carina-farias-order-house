@@ -13,6 +13,7 @@ export type WhatsAppOrder = {
   total: number;
   notes?: string | undefined;
   paymentStatus?: string;
+  trackingUrl?: string | undefined;
 };
 
 export function buildWhatsAppMessage(order: WhatsAppOrder): string {
@@ -27,6 +28,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder): string {
   lines.push(`Pagamento: ${order.payment}`);
   if (order.paymentStatus) lines.push(`Status do pagamento: ${order.paymentStatus}`);
   if (order.notes) lines.push(`Obs: ${order.notes}`);
+  if (order.trackingUrl) lines.push("", `Acompanhe o pedido: ${order.trackingUrl}`);
   return lines.join("\n");
 }
 

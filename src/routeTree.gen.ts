@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as VendasRouteImport } from './routes/vendas'
+import { Route as PedidoIdRouteImport } from './routes/pedido.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const VendasRoute = VendasRouteImport.update({
   path: '/vendas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PedidoIdRoute = PedidoIdRouteImport.update({
+  id: '/pedido/$id',
+  path: '/pedido/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/vendas': typeof VendasRoute
+  '/pedido/$id': typeof PedidoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/vendas': typeof VendasRoute
+  '/pedido/$id': typeof PedidoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/vendas': typeof VendasRoute
+  '/pedido/$id': typeof PedidoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/vendas'
+  fullPaths: '/' | '/admin' | '/auth' | '/vendas' | '/pedido/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/vendas'
-  id: '__root__' | '/' | '/admin' | '/auth' | '/vendas'
+  to: '/' | '/admin' | '/auth' | '/vendas' | '/pedido/$id'
+  id: '__root__' | '/' | '/admin' | '/auth' | '/vendas' | '/pedido/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   VendasRoute: typeof VendasRoute
+  PedidoIdRoute: typeof PedidoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VendasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pedido/$id': {
+      id: '/pedido/$id'
+      path: '/pedido/$id'
+      fullPath: '/pedido/$id'
+      preLoaderRoute: typeof PedidoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   VendasRoute: VendasRoute,
+  PedidoIdRoute: PedidoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
