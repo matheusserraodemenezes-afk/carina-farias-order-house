@@ -2,6 +2,8 @@ import { z } from "zod";
 import { MENU } from "./menu";
 
 export const preferencesSchema = z.object({
+  occasion: z.enum(["Dia a dia", "Família", "Amigos", "Aniversário", "Futebol", "Trabalho"]),
+  diet: z.array(z.enum(["Sem carne vermelha", "Sem carne suína", "Mais leve"])).max(3),
   people: z.number().int().min(1).max(10),
   budget: z.number().min(1).max(2000).nullable(),
   meat: z.enum(["Qualquer", "Carne", "Frango", "Calabresa", "Bisteca", "Coração"]),
@@ -24,6 +26,8 @@ export function eligibleMenu(preferences: Preferences) {
   return MENU.filter((item) => {
     if (item.category !== "Churrasco" && item.category !== "Sucos") return false;
     const name = normalized(item.name);
+    if (item.category === "Churrasco" && preferences.diet.includes("Sem carne vermelha") && ["carne", "charque", "bisteca"].some((word) => name.includes(word))) return false;
+    if (item.category === "Churrasco" && preferences.diet.includes("Sem carne suína") && ["calabresa", "bisteca"].some((word) => name.includes(word))) return false;
     if (preferences.avoid.some((avoid) => name.includes(normalized(avoid)))) return false;
     if (item.category === "Churrasco" && preferences.meat !== "Qualquer" && !name.includes(normalized(preferences.meat))) return false;
     if (item.category === "Sucos" && (preferences.drink === "Sem bebida" || (preferences.drink !== "Qualquer" && !name.includes(normalized(preferences.drink))))) return false;

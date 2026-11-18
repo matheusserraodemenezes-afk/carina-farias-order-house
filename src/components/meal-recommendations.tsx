@@ -12,10 +12,12 @@ import { preferencesSchema, type Preferences, type Suggestions } from "@/lib/rec
 
 const meats: Preferences["meat"][] = ["Qualquer", "Carne", "Frango", "Calabresa", "Bisteca", "Coração"];
 const drinks: Preferences["drink"][] = ["Qualquer", "Goiaba", "Acerola", "Caju", "Sem bebida"];
+const occasions: Preferences["occasion"][] = ["Dia a dia", "Família", "Amigos", "Aniversário", "Futebol", "Trabalho"];
+const diets: Preferences["diet"] = ["Sem carne vermelha", "Sem carne suína", "Mais leve"];
 const exclusions: Preferences["avoid"] = ["Carne", "Frango", "Calabresa", "Bisteca", "Coração"];
 
 export function MealRecommendations({ onAdd }: { onAdd: (items: { id: string; qty: number }[]) => void }) {
-  const [preferences, setPreferences] = useState<Preferences>({ people: 1, budget: null, meat: "Qualquer", drink: "Qualquer", avoid: [], notes: "" });
+  const [preferences, setPreferences] = useState<Preferences>({ occasion: "Dia a dia", diet: [], people: 1, budget: null, meat: "Qualquer", drink: "Qualquer", avoid: [], notes: "" });
   const [budget, setBudget] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,6 +50,8 @@ export function MealRecommendations({ onAdd }: { onAdd: (items: { id: string; qt
       <div className="flex items-center gap-3"><Sparkles className="size-7 text-primary" /><h2 id="suggestion-heading" className="font-display text-4xl sm:text-5xl">Uma combinação do seu jeito</h2></div>
       <form onSubmit={generate} className="mt-6 border-y border-border py-6">
         <fieldset disabled={loading} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div><label id="occasion-label" className="mb-2 block text-sm font-semibold">Qual a ocasião?</label><Select disabled={loading} value={preferences.occasion} onValueChange={(value) => { const occasion = occasions.find((item) => item === value); if (occasion) update({ occasion }); }}><SelectTrigger aria-labelledby="occasion-label"><SelectValue /></SelectTrigger><SelectContent>{occasions.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></div>
+          <div className="sm:col-span-2 lg:col-span-3"><p className="mb-3 text-sm font-semibold">Preferências alimentares</p><div className="flex flex-wrap gap-x-5 gap-y-3">{diets.map((diet) => <label key={diet} className="flex items-center gap-2 text-sm"><Checkbox disabled={loading} checked={preferences.diet.includes(diet)} onCheckedChange={(checked) => update({ diet: checked ? [...preferences.diet, diet] : preferences.diet.filter((item) => item !== diet) })} />{diet}</label>)}</div></div>
           <div><label className="mb-2 block text-sm font-semibold">Quantas pessoas?</label><div className="flex h-10 items-center gap-4"><Button type="button" size="icon" variant="outline" aria-label="Menos pessoas" disabled={loading || preferences.people === 1} onClick={() => update({ people: preferences.people - 1 })}><Minus /></Button><output aria-live="polite" className="w-6 text-center font-bold">{preferences.people}</output><Button type="button" size="icon" variant="outline" aria-label="Mais pessoas" disabled={loading || preferences.people === 10} onClick={() => update({ people: preferences.people + 1 })}><Plus /></Button></div></div>
           <div><label htmlFor="meal-budget" className="mb-2 block text-sm font-semibold">Orçamento total (R$)</label><Input id="meal-budget" inputMode="decimal" placeholder="Sem limite definido" value={budget} onChange={(event) => { setBudget(event.target.value); setResult(null); setError(""); setAdded(null); }} /><p className="mt-1 text-xs text-muted-foreground">Somente produtos, sem entrega.</p></div>
           <div><label id="meat-label" className="mb-2 block text-sm font-semibold">Carne preferida</label><Select disabled={loading} value={preferences.meat} onValueChange={(value) => { const meat = meats.find((item) => item === value); if (meat) update({ meat }); }}><SelectTrigger aria-labelledby="meat-label"><SelectValue /></SelectTrigger><SelectContent>{meats.map((meat) => <SelectItem key={meat} value={meat}>{meat === "Qualquer" ? "Surpreenda-me" : meat}</SelectItem>)}</SelectContent></Select></div>

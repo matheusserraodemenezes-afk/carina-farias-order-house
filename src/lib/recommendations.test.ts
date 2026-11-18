@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MENU } from "./menu";
 import { eligibleMenu, validateSuggestions, type Preferences } from "./recommendations";
 
-const preferences: Preferences = { people: 1, budget: 21, meat: "Qualquer", drink: "Qualquer", avoid: [], notes: "" };
+const preferences: Preferences = { occasion: "Família", diet: [], people: 1, budget: 21, meat: "Qualquer", drink: "Qualquer", avoid: [], notes: "" };
 const combination = (items = [{ id: "c1", qty: 1 }, { id: "s1", qty: 1 }]) => ({ message: "", combinations: [{ title: "Combinação", reason: "", items }] });
 
 describe("Cardápio oficial e sugestões", () => {
@@ -43,5 +43,16 @@ describe("Cardápio oficial e sugestões", () => {
   });
   it("valida quantidades para todas as pessoas", () => {
     expect(() => validateSuggestions(combination(), { ...preferences, budget: null, people: 2 })).toThrow("Invalid portions");
+  });
+});
+
+describe("restrições alimentares", () => {
+  it("sem carne suína remove calabresa", () => {
+    expect(eligibleMenu({ ...preferences, diet: ["Sem carne suína"] }).some((item) => /calabresa/i.test(item.name))).toBe(false);
+  });
+  it("sem carne vermelha mantém só frango no churrasco", () => {
+    const grill = eligibleMenu({ ...preferences, diet: ["Sem carne vermelha"] }).filter((item) => item.category === "Churrasco");
+    expect(grill.length).toBeGreaterThan(0);
+    expect(grill.every((item) => !/carne|charque|bisteca/i.test(item.name))).toBe(true);
   });
 });
