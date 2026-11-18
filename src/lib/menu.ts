@@ -468,3 +468,6 @@ export const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency",
 export const CONTACT = "+55 91 8038-9283";
 export const CONTACT_URL = "https://wa.me/559180389283";
 export const ADDRESS = "Av. Roberto Camilier, 1521 — entre Rua Nova Segunda e Quintino, Jurunas";
+export const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Av. Roberto Camilier, 1521, Jurunas, Belém - PA")}`;
+// Horário de funcionamento: preencha quando a loja confirmar (lista vazia = "consulte pelo WhatsApp").
+export const OPENING_HOURS: { days: string; hours: string }[] = [{ days: "Segunda a sábado", hours: "19h à 1h" }];

@@ -198,6 +198,44 @@ export type Database = {
           },
         ]
       }
+      order_status_checks: {
+        Row: {
+          created_at: string
+          id: string
+          mode: string
+          order_id: string
+          order_status: string
+          payment_method: string
+          payment_status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mode: string
+          order_id: string
+          order_status: string
+          payment_method: string
+          payment_status: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mode?: string
+          order_id?: string
+          order_status?: string
+          payment_method?: string
+          payment_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_checks_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           address: string

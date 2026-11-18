@@ -3,6 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { ArrowLeft, Check, RefreshCw } from "lucide-react";
 import { getOrderTracking } from "@/lib/order-tracking.functions";
+import { recordStatusCheck } from "@/lib/tracking-insights.functions";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderStatus, type PaymentStatus } from "@/lib/payments";
 import { PixPayment } from "@/components/pix-payment";
 import { CONTACT_URL, brl } from "@/lib/menu";
@@ -56,6 +57,7 @@ function TrackingPage() {
   useEffect(() => {
     if (!order || lastTracked.current === statusKey) return;
     lastTracked.current = statusKey;
+    recordStatusCheck({ data: { id } }).catch(() => {});
     window.__lovableEvents?.track?.("project.order_status_viewed", { payment_status: order.paymentStatus, order_status: order.status, mode: order.mode, payment_method: order.paymentMethod });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusKey]);

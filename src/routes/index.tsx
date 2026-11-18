@@ -14,7 +14,7 @@ import { createOrder } from "@/lib/orders.functions";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { PAYMENT_OPTIONS, PAYMENT_STATUS_LABELS, paymentLabel, type PaymentId } from "@/lib/payments";
 import { PixPayment } from "@/components/pix-payment";
-import { ADDRESS, CONTACT, CONTACT_URL, CATEGORIES, DELIVERY_FEE, MENU, brl, type Category } from "@/lib/menu";
+import { ADDRESS, MAPS_URL, OPENING_HOURS, CONTACT, CONTACT_URL, CATEGORIES, DELIVERY_FEE, MENU, brl, type Category } from "@/lib/menu";
 const logo = logoAsset.url;
 
 export const Route = createFileRoute("/")({
@@ -95,9 +95,12 @@ function Index() {
             <img src={logo} alt="Churrascaria e Lanchonete da Carina" width={200} height={140} className="h-12 w-16 object-contain" />
             <span className="font-display text-2xl tracking-wide">Carina <span className="text-ember">Farias</span></span>
           </span>
+          <span className="flex items-center gap-3">
+          <a href="#onde-estamos" className="text-sm font-semibold underline-offset-4 hover:underline">Onde estamos</a>
           <button onClick={() => setOpen(true)} className="relative rounded-full bg-ember px-4 py-2 text-sm font-bold text-primary-foreground shadow-ember">
             Carrinho {count > 0 && <span className="ml-1 rounded-full bg-background px-2 text-foreground">{count}</span>}
           </button>
+          </span>
         </div>
       </header>
 
@@ -170,7 +173,17 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t px-5 py-8 text-center text-sm text-muted-foreground"><p>© Carina Farias — Churrascaria &amp; Lanchonete</p><p className="mt-2">{ADDRESS}</p><Button asChild variant="outline" className="mt-4"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button><p className="mt-3">Água: consulte disponibilidade e preço pelo WhatsApp.</p><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/vendas">Vendas e promoções</Link></Button><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/admin">Painel de pedidos</Link></Button></footer>
+      <section id="onde-estamos" aria-labelledby="onde-estamos-titulo" className="mx-auto max-w-6xl scroll-mt-20 px-5 pb-16">
+        <div className="rounded-xl border bg-card p-6 md:grid md:grid-cols-3 md:gap-6">
+          <div><h2 id="onde-estamos-titulo" className="font-display text-4xl">Onde <span className="text-ember">estamos</span></h2><p className="mt-2 text-sm text-muted-foreground">Retire no balcão ou peça a entrega.</p></div>
+          <div className="mt-4 md:mt-0"><h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Endereço</h3><p className="mt-1">{ADDRESS}</p><p className="text-sm text-muted-foreground">Belém — PA</p><Button asChild className="mt-3"><a href={MAPS_URL} target="_blank" rel="noopener noreferrer">📍 Abrir no mapa</a></Button></div>
+          <div className="mt-4 md:mt-0"><h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Horário de funcionamento</h3>
+            {OPENING_HOURS.length ? <ul className="mt-1 space-y-1">{OPENING_HOURS.map((h) => <li key={h.days} className="flex justify-between gap-3"><span>{h.days}</span><span className="font-semibold">{h.hours}</span></li>)}</ul> : <p className="mt-1">Consulte o horário de hoje pelo WhatsApp.</p>}
+            <Button asChild variant="outline" className="mt-3"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button></div>
+        </div>
+      </section>
+
+      <footer className="border-t px-5 py-8 text-center text-sm text-muted-foreground"><p>© Carina Farias — Churrascaria &amp; Lanchonete</p><p className="mt-2">{ADDRESS} · <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="underline">ver no mapa</a></p><Button asChild variant="outline" className="mt-4"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button><p className="mt-3">Água: consulte disponibilidade e preço pelo WhatsApp.</p><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/vendas">Vendas e promoções</Link></Button><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/admin">Painel de pedidos</Link></Button></footer>
 
       {count > 0 && !open && (
         <button onClick={() => setOpen(true)} className="fixed inset-x-5 bottom-5 z-30 mx-auto max-w-md rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember">

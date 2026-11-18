@@ -21,3 +21,4 @@
 - The order admin panel uses authenticated server functions that verify `has_role(admin)` via the user's client; admin access is granted only through `user_roles`.
 - The public order tracking page /pedido/$id looks orders up by their random UUID and returns only status, items and totals, never customer phone or address.
 - The sitemap is router-derived: every route declares staticData.sitemap; only public pages (currently the menu home) are true, private/admin/order pages false.
+- Order status checks are recorded server-side from the order's DB state (never client input) into an admin-only table; owner insights aggregate them in a pure tested module and send only aggregates to AI.

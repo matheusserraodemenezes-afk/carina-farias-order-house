@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAccount } from "@/components/account-context";
+import { TrackingInsights } from "@/components/tracking-insights";
 import { checkAdmin, listAdminOrders, updateAdminOrder } from "@/lib/admin-orders.functions";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderStatus, type PaymentStatus } from "@/lib/payments";
 import { brl } from "@/lib/menu";
@@ -71,6 +72,7 @@ function AdminPage() {
           <Button variant="outline" onClick={load} disabled={loading}>{loading ? <Loader2 className="motion-safe:animate-spin" /> : <RefreshCw />}Atualizar</Button>
         </div>
         {error && <p role="alert" className="mt-4 text-destructive">{error}</p>}
+        <TrackingInsights />
         {!loading && !shown.length && <p className="mt-6 text-muted-foreground">Nenhum pedido encontrado.</p>}
         <div className="mt-6 space-y-4">
           {shown.map((o) => (
