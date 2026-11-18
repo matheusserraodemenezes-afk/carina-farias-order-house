@@ -59,7 +59,7 @@ function TrackingPage() {
   return (
     <Shell>
       <h1 className="font-display text-4xl text-ember">Pedido #{order.number}</h1>
-      <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString("pt-BR")} · {order.mode === "entrega" ? "Entrega" : "Retirada na loja"}</p>
+      <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString("pt-BR", { timeZone: "America/Belem" })} · {order.mode === "entrega" ? "Entrega" : "Retirada na loja"}</p>
 
       {eta && (
         <section className="mt-6 rounded-xl border border-primary bg-card p-4" aria-live="polite">
