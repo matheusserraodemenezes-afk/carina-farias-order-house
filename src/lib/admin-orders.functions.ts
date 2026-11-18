@@ -20,13 +20,18 @@ export const listAdminOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { data, error } = await context.supabase
-      .from("orders")
-      .select("id, number, customer_name, customer_phone, mode, address, payment_method, payment_status, status, subtotal, delivery_fee, total, notes, created_at, order_items(name, qty, unit_price)")
-      .order("created_at", { ascending: false })
-      .limit(100);
-    if (error) { console.error("[listAdminOrders]", error.message); throw new Error("Não foi possível carregar os pedidos."); }
-    return (data ?? []).map((o) => ({ ...o, number: Number(o.number), subtotal: Number(o.subtotal), delivery_fee: Number(o.delivery_fee), total: Number(o.total), order_items: o.order_items.map((i) => ({ ...i, unit_price: Number(i.unit_price) })) }));
+    const data = [];
+    for (let offset = 0; ; offset += 1000) {
+      const page = await context.supabase
+        .from("orders")
+        .select("id, number, customer_name, customer_phone, mode, address, payment_method, payment_status, status, subtotal, delivery_fee, total, notes, created_at, order_items(name, qty, unit_price)")
+        .order("created_at", { ascending: false }).order("id")
+        .range(offset, offset + 999);
+      if (page.error) { console.error("[listAdminOrders]", page.error.message); throw new Error("Não foi possível carregar os pedidos."); }
+      data.push(...(page.data ?? []));
+      if ((page.data?.length ?? 0) < 1000) break;
+    }
+    return data.map((o) => ({ ...o, number: Number(o.number), subtotal: Number(o.subtotal), delivery_fee: Number(o.delivery_fee), total: Number(o.total), order_items: o.order_items.map((i) => ({ ...i, unit_price: Number(i.unit_price) })) }));
   });
 
 export const getNewOrderAlerts = createServerFn({ method: "POST" })

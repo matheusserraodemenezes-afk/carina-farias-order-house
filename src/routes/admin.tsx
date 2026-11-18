@@ -55,7 +55,7 @@ function AdminPage() {
     setLoading(true); setError("");
     try {
       const fresh = await list(); setOrders(fresh);
-      if (user) { try { setSavedAt(saveOfflineOrders(user.id, fresh).savedAt); } catch { setError("Não foi possível salvar os pedidos neste celular."); } }
+      if (user) { try { setSavedAt(saveOfflineOrders(user.id, fresh).savedAt); } catch { setError("O celular ficou sem espaço para salvar todo o histórico."); } }
     } catch { setError("Não foi possível atualizar os pedidos. Os dados salvos podem estar desatualizados."); } finally { setLoading(false); }
   }, [list, user?.id]);
 
@@ -114,7 +114,7 @@ function AdminPage() {
       : admin === null ? <p className="mt-6 text-muted-foreground">Verificando acesso…</p>
       : !admin ? <p className="mt-6 text-destructive">Esta conta não tem acesso de administração.</p>
       : <>
-        {savedAt && <div className="mt-4 flex flex-wrap items-center gap-3"><p className="text-xs text-muted-foreground">Salvo neste celular · {new Date(savedAt).toLocaleString("pt-BR", { timeZone: "America/Belem" })} · até 100 pedidos</p><Button variant="ghost" size="sm" onClick={() => { clearOfflineOrders(); setSavedAt(""); if (offline) { setOrders([]); setAdmin(false); } }}><Trash2 />Apagar do celular</Button></div>}
+        {savedAt && <div className="mt-4 flex flex-wrap items-center gap-3"><p className="text-xs text-muted-foreground">Salvo neste celular · {new Date(savedAt).toLocaleString("pt-BR", { timeZone: "America/Belem" })} · histórico completo ({orders.length} pedidos)</p><Button variant="ghost" size="sm" onClick={() => { clearOfflineOrders(); setSavedAt(""); if (offline) { setOrders([]); setAdmin(false); } }}><Trash2 />Apagar do celular</Button></div>}
         {!offline && <nav className="mt-6 flex flex-wrap gap-3" aria-label="Áreas do painel">
           <Button asChild variant="outline"><Link to="/admin/vendas"><ChartNoAxesCombined />Vendas por dia</Link></Button>
           <Button asChild variant="outline"><Link to="/admin/clientes"><Users />Clientes</Link></Button>
