@@ -5,6 +5,9 @@ import { getOrderTracking } from "@/lib/order-tracking.functions";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderStatus, type PaymentStatus } from "@/lib/payments";
 import { PixPayment } from "@/components/pix-payment";
 import { CONTACT_URL, brl } from "@/lib/menu";
+import { orderEta } from "@/lib/order-eta";
+
+const hhmm = (d: Date) => d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Belem" });
 
 const trackingQuery = (id: string) => queryOptions({
   queryKey: ["order-tracking", id],
@@ -51,13 +54,23 @@ function TrackingPage() {
   const current = steps.indexOf(order.status as OrderStatus);
   const paid = order.paymentStatus === "pago";
   const cancelled = order.status === "cancelado";
+  const eta = orderEta(order.createdAt, order.mode, order.status);
 
   return (
     <Shell>
       <h1 className="font-display text-4xl text-ember">Pedido #{order.number}</h1>
       <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString("pt-BR")} · {order.mode === "entrega" ? "Entrega" : "Retirada na loja"}</p>
 
-      <section className="mt-6 rounded-xl border bg-card p-4" aria-live="polite">
+      {eta && (
+        <section className="mt-6 rounded-xl border border-primary bg-card p-4" aria-live="polite">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Previsão</h2>
+          <p className="mt-1 text-sm">Pronto por volta de <strong className="text-lg">{hhmm(eta.readyAt)}</strong></p>
+          {eta.arriveAt && <p className="text-sm">Chega até você por volta de <strong className="text-lg text-primary">{hhmm(eta.arriveAt)}</strong></p>}
+          <p className="mt-2 text-xs text-muted-foreground">{eta.late ? "Está levando um pouco mais que o normal. Qualquer dúvida, fale com a loja." : "Horário estimado; pode variar com o movimento."}</p>
+        </section>
+      )}
+
+      <section className="mt-4 rounded-xl border bg-card p-4" aria-live="polite">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Pagamento · {paymentLabel(order.paymentMethod)}</h2>
         <p className={`mt-1 text-2xl font-bold ${paid ? "text-gold" : "text-primary"}`}>{PAYMENT_STATUS_LABELS[order.paymentStatus as PaymentStatus] ?? order.paymentStatus}</p>
         {!paid && order.paymentMethod === "pix" && order.paymentStatus === "pendente" && (
