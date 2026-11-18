@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowLeft, Check, RefreshCw } from "lucide-react";
 import { getOrderTracking } from "@/lib/order-tracking.functions";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderStatus, type PaymentStatus } from "@/lib/payments";
@@ -51,8 +51,10 @@ function TrackingPage() {
   const { data: order, isFetching, refetch } = useSuspenseQuery(trackingQuery(id));
   const statusKey = order ? `${order.paymentStatus}|${order.status}` : "none";
   // Registra cada status que a cliente viu (uma vez por combinação, não a cada atualização automática).
+  const lastTracked = useRef<string | null>(null);
   useEffect(() => {
-    if (!order) return;
+    if (!order || lastTracked.current === statusKey) return;
+    lastTracked.current = statusKey;
     window.__lovableEvents?.track?.("project.order_status_viewed", { payment_status: order.paymentStatus, order_status: order.status, mode: order.mode, payment_method: order.paymentMethod });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusKey]);
