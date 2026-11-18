@@ -23,3 +23,4 @@
 - The sitemap is router-derived: every route declares staticData.sitemap; only public pages (currently the menu home) are true, private/admin/order pages false.
 - Order status checks are recorded server-side from the order's DB state (never client input) into an admin-only table; owner insights aggregate them in a pure tested module and send only aggregates to AI.
 - Order completion uses an admin-only atomic RPC with a row lock and persistent completed_at; emit the completion analytics event in the existing admin success handler only when the RPC reports the first qualifying transition, preventing repeat counts across sessions.
+- Daily sales use paginated admin-authenticated order reads and pure cent-based aggregation in Belém time; group sales by creation date, completions by completed_at, and exclude cancelled/refunded orders from paid and pending revenue.

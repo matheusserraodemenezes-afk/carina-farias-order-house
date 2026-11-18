@@ -245,8 +245,8 @@ function Index() {
       {/* Receipt */}
       {order && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-5">
-          <div className="w-full max-w-sm rounded-xl bg-card p-5">
-            <h2 className="font-display text-4xl text-ember">Pedido recebido! 🔥</h2>
+          <div className="max-h-[calc(100svh-2.5rem)] w-full max-w-sm overflow-y-auto rounded-xl bg-card p-5">
+            <h2 className="font-display text-4xl text-ember">{order.saved ? "Pedido registrado!" : "Nota do pedido"} 🔥</h2>
             <div id="receipt" className="mt-4 rounded-lg border bg-background p-4 font-mono text-xs">
               <p className="text-center font-bold">CARINA FARIAS — CHURRASCARIA</p>
               <p className="text-center">Pedido #{order.id} — {order.date}</p>
@@ -266,6 +266,7 @@ function Index() {
             </div>
             {order.paymentId === "pix" && <div className="mt-3"><PixPayment amount={order.total} reference={`Pedido ${order.id}`} /></div>}
             {!order.saved && <p role="alert" className="mt-3 text-xs text-destructive">Não conseguimos registrar o pedido no sistema agora. Envie pelo WhatsApp para garantir que a loja receba.</p>}
+            <p className="mt-3 text-sm text-muted-foreground">Envio ao WhatsApp pendente: toque em “Enviar pedido pelo WhatsApp” e confirme o envio na conversa com a loja.</p>
             {order.trackingId && <Link to="/pedido/$id" params={{ id: order.trackingId }} className="mt-3 block rounded-full border border-primary py-3 text-center font-bold text-primary">📍 Acompanhar pedido</Link>}
             <div className="mt-4 grid grid-cols-2 gap-2">
               <a href={orderWhatsApp(order)} target="_blank" rel="noopener noreferrer" className="col-span-2 rounded-full bg-green-600 py-3 text-center font-bold text-white">📲 Enviar pedido pelo WhatsApp</a>

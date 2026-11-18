@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, ChartNoAxesCombined } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAccount } from "@/components/account-context";
@@ -21,8 +21,13 @@ export const Route = createFileRoute("/admin")({
     { name: "twitter:card", content: "summary" },
     { name: "robots", content: "noindex" },
   ] }),
-  component: AdminPage,
+  component: AdminLayout,
 });
+
+function AdminLayout() {
+  const path = useRouterState({ select: (state) => state.location.pathname });
+  return <>{(path === "/admin" || path === "/admin/") && <AdminPage />}<Outlet /></>;
+}
 
 type AdminOrder = Awaited<ReturnType<typeof listAdminOrders>>[number];
 const paymentTone: Record<PaymentStatus, string> = { pendente: "border-primary text-primary", pago: "border-gold text-gold", estornado: "border-muted-foreground text-muted-foreground" };
@@ -71,6 +76,7 @@ function AdminPage() {
       : admin === null ? <p className="mt-6 text-muted-foreground">Verificando acesso…</p>
       : !admin ? <p className="mt-6 text-destructive">Esta conta não tem acesso de administração.</p>
       : <>
+        <Button asChild variant="outline" className="mt-6"><Link to="/admin/vendas"><ChartNoAxesCombined />Vendas por dia</Link></Button>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <p className="mr-auto text-sm"><strong className="text-primary">{waiting}</strong> aguardando pagamento</p>
           <Select value={filter} onValueChange={(v) => setFilter(v as typeof filter)}><SelectTrigger className="w-52" aria-label="Filtrar pagamento"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="todos">Todos os pagamentos</SelectItem>{(Object.keys(PAYMENT_STATUS_LABELS) as PaymentStatus[]).map((s) => <SelectItem key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</SelectItem>)}</SelectContent></Select>

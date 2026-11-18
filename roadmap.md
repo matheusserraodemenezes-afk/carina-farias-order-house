@@ -1,4 +1,7 @@
 # Recomendações do cardápio
+- [x] Adicionar e conferir relatório administrativo de vendas por dia, valores e status, no celular e computador.
+- [x] Verificar a nota do checkout ao WhatsApp; mensagem completa abre, envio exige confirmação da cliente, aviso e rolagem da nota ajustados.
+- [ ] Liberar acesso administrativo: aguardando o e-mail da conta e primeiro login.
 - [x] Contar a primeira conclusão de cada pedido; transições verificadas com três testes e evento conferido no painel sem duplicação.
 - [ ] Salvar histórico privado por conta, consultar períodos e reutilizar vendas; conferir persistência e isolamento.
 - [ ] Adicionar nome e foto de perfil privados.

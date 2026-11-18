@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { dailySales, dailySalesSchema, type SalesOrder } from "./daily-sales";
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
@@ -32,6 +33,26 @@ const updateSchema = z.object({
   paymentStatus: z.enum(["pendente", "pago", "estornado"]).optional(),
   status: z.enum(["novo", "em_preparo", "pronto", "saiu_entrega", "entregue", "cancelado"]).optional(),
 }).refine((v) => v.paymentStatus || v.status);
+
+export const getDailySales = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => dailySalesSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const start = `${data.from}T00:00:00-03:00`;
+    const end = new Date(Date.parse(`${data.to}T00:00:00-03:00`) + 86400000).toISOString();
+    const orders: SalesOrder[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const result = await context.supabase.from("orders")
+        .select("created_at, completed_at, total, status, payment_status")
+        .or(`and(created_at.gte.${start},created_at.lt.${end}),and(completed_at.gte.${start},completed_at.lt.${end})`)
+        .order("id").range(offset, offset + 999);
+      if (result.error) { console.error("[getDailySales]", result.error.message); throw new Error("Não foi possível carregar as vendas."); }
+      orders.push(...(result.data ?? []));
+      if ((result.data?.length ?? 0) < 1000) break;
+    }
+    return dailySales(orders, data.from, data.to);
+  });
 
 export const updateAdminOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
