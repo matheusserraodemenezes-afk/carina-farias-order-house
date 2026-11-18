@@ -22,6 +22,9 @@ export const Route = createFileRoute("/admin")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
     { name: "robots", content: "noindex" },
+  ], links: [
+    { rel: "manifest", href: "/manifest.webmanifest" },
+    { rel: "apple-touch-icon", href: "/panel-icon-180.png" },
   ] }),
   component: AdminLayout,
 });
