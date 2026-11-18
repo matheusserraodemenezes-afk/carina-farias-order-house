@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.order_status_viewed": {
+      "event_schema_version": 1,
+      "description": "A customer saw a payment/progress status on the order tracking page (once per distinct status combination).",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "payment_status",
+          "order_status",
+          "mode",
+          "payment_method"
+        ],
+        "properties": {
+          "payment_status": {
+            "type": "string"
+          },
+          "order_status": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "payment_method": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
