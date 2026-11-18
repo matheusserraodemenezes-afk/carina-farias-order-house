@@ -14,5 +14,6 @@
 - Keep preference and output validation in a client-safe pure module with focused unit tests; model calls remain inside server execution boundaries.
 - Restrict meal recommendation candidates to main dishes and juices, excluding unrelated menu categories so new catalog entries cannot silently alter the combination rules.
 - Keep sales analysis stateless with no customer identifiers or shared persistence; its public validated server function only analyzes submitted aggregates, never reads private owner data.
+- Persist sales periods and profiles through authenticated server functions with owner-scoped RLS; the public sales page only fetches private history after sign-in, never in its loader.
 - Compute sales co-occurrence per order and promotion prices from the shared catalog in a pure tested module; AI proposes hypothetical promotions but cannot activate discounts or alter checkout.
 - Keep illustrative product images in a client-safe ID-to-image map separate from catalog business data; menu and cart reuse it without sending media through AI analysis.

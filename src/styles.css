@@ -58,7 +58,12 @@
   --gradient-ember: linear-gradient(135deg, oklch(0.72 0.22 350), oklch(0.55 0.26 0));
   --gradient-fade: linear-gradient(to top, var(--background) 5%, oklch(0.16 0.008 40 / 0.6) 50%, oklch(0.16 0.008 40 / 0.2));
   --shadow-ember: 0 10px 40px -10px oklch(0.65 0.24 355 / 0.6);
+  --google-background: #131314;
+  --google-border: #8E918F;
+  --google-foreground: #E3E3E3;
 }
+
+.google-sign-in { background: var(--google-background); border-color: var(--google-border); color: var(--google-foreground); font-weight: 500; gap: 10px; }
 
 @layer base {
   * { border-color: var(--color-border); }

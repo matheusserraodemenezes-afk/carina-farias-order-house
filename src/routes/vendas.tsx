@@ -10,6 +10,7 @@ import logoAsset from "@/assets/carina-original-logo.jpg.asset.json";
 import { MENU, brl } from "@/lib/menu";
 import { salesInputSchema, salesMetrics, type SalesInput, type SalesAnalysis } from "@/lib/sales-analysis";
 import { analyzeSales } from "@/lib/sales-analysis.functions";
+import { SalesHistory } from "@/components/sales-history";
 
 export const Route = createFileRoute("/vendas")({
   head: () => ({ meta: [
@@ -71,6 +72,7 @@ function SalesPage() {
     </header>
     <main className="mx-auto max-w-6xl px-5 py-10">
       <div className="mb-8 flex items-start gap-4"><BarChart3 className="mt-1 h-8 w-8 shrink-0 text-primary" /><div><p className="text-sm uppercase text-gold">Gestão da Carina</p><h1 className="font-display text-5xl sm:text-6xl">Vendas e promoções</h1></div></div>
+      <SalesHistory sales={{ period, orders }} editingDraft={draft.some((line) => !!line.id)} onLoad={(sales) => { setPeriod(sales.period); setOrders(sales.orders.map((order) => ({ ...order, items: order.items.map((item) => ({ ...item })) }))); setEditing(null); setDraft([newLine()]); setPaid(""); setAnalysis(null); setError(""); }} />
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <section aria-labelledby="sales-entry">
           <h2 id="sales-entry" className="font-display text-3xl">Pedidos vendidos</h2>
@@ -95,7 +97,7 @@ function SalesPage() {
             {!orders.length && <p className="py-6 text-sm text-muted-foreground">Nenhuma venda informada.</p>}
             {orders.map((order, index) => <div key={index} className="flex items-start gap-2 py-3"><div className="min-w-0 flex-1"><p className="text-sm font-semibold">Pedido {index + 1} · {brl(order.paid)}</p><p className="mt-1 text-sm text-muted-foreground break-words">{order.items.map((line) => `${line.qty}× ${MENU.find((item) => item.id === line.id)?.name}`).join(" + ")}</p></div><Button variant="ghost" size="icon" disabled={loading || editing !== null} title="Editar pedido" aria-label={`Editar pedido ${index + 1}`} onClick={() => { setEditing(index); setDraft(order.items.map((line) => ({ ...line }))); setPaid(String(order.paid)); setError(""); }}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" disabled={loading || editing !== null} title="Excluir pedido" aria-label={`Excluir pedido ${index + 1}`} onClick={() => { setOrders((current) => current.filter((_, i) => i !== index)); setAnalysis(null); }}><Trash2 className="h-4 w-4" /></Button></div>)}
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">Sem nomes ou contatos de clientes. Dados temporários desta página, não salvos. As métricas se referem apenas aos pedidos informados.</p>
+          <p className="mt-4 text-xs text-muted-foreground">Sem nomes ou contatos de clientes. Salve o período no histórico para consultar depois. As métricas se referem apenas aos pedidos informados.</p>
         </section>
         <section aria-labelledby="sales-results" className="min-w-0">
           <h2 id="sales-results" className="font-display text-3xl">Retrato das vendas</h2>

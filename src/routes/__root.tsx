@@ -8,7 +8,10 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { AccountContext } from "@/components/account-context";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -119,11 +122,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const [account, setAccount] = useState<{ user: User | null; ready: boolean }>({ user: null, ready: false });
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => { if (active) setAccount({ user: data.user, ready: true }); });
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!["SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) return;
+      setAccount({ user: session?.user ?? null, ready: true });
+      if (event === "SIGNED_OUT") { queryClient.clear(); }
+      else { queryClient.invalidateQueries(); }
+      router.invalidate();
+    });
+    return () => { active = false; data.subscription.unsubscribe(); };
+  }, [queryClient, router]);
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AccountContext.Provider value={account}><Outlet /></AccountContext.Provider>
     </QueryClientProvider>
   );
 }
