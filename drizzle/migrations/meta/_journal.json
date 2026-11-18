@@ -29,6 +29,20 @@
       "when": 1795021611235,
       "tag": "0003_order_status_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795022463834,
+      "tag": "0004_count_first_order_completion",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795022604806,
+      "tag": "0005_fix_completion_status_casts",
+      "breakpoints": true
     }
   ]
 }

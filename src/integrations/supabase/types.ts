@@ -239,6 +239,7 @@ export type Database = {
       orders: {
         Row: {
           address: string
+          completed_at: string | null
           created_at: string
           customer_id: string | null
           customer_name: string
@@ -257,6 +258,7 @@ export type Database = {
         }
         Insert: {
           address?: string
+          completed_at?: string | null
           created_at?: string
           customer_id?: string | null
           customer_name: string
@@ -275,6 +277,7 @@ export type Database = {
         }
         Update: {
           address?: string
+          completed_at?: string | null
           created_at?: string
           customer_id?: string | null
           customer_name?: string
@@ -454,6 +457,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      update_order_with_completion: {
+        Args: { _id: string; _payment_status?: string; _status?: string }
         Returns: boolean
       }
     }

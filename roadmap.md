@@ -1,4 +1,5 @@
 # Recomendações do cardápio
+- [x] Contar a primeira conclusão de cada pedido; transições verificadas com três testes e evento conferido no painel sem duplicação.
 - [ ] Salvar histórico privado por conta, consultar períodos e reutilizar vendas; conferir persistência e isolamento.
 - [ ] Adicionar nome e foto de perfil privados.
 - [x] Colocar imagens ilustrativas realistas por produto no cardápio e carrinho; 64 produtos e água conferidos no celular e computador, sem alterar preços.

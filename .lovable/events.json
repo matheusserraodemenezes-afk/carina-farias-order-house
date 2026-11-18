@@ -1,6 +1,30 @@
 {
   "schema_version": 1,
   "events": {
+    "project.order_completed": {
+      "event_schema_version": 1,
+      "description": "Pedidos feitos por dia: first successful transition from preparing to ready or delivered, once per order.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pronto",
+              "entregue"
+            ]
+          }
+        }
+      }
+    },
     "project.order_status_viewed": {
       "event_schema_version": 1,
       "description": "A customer saw a payment/progress status on the order tracking page (once per distinct status combination).",

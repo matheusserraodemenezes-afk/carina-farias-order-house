@@ -38,10 +38,11 @@ export const updateAdminOrder = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => updateSchema.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase.from("orders").update({
-      ...(data.paymentStatus ? { payment_status: data.paymentStatus } : {}),
-      ...(data.status ? { status: data.status } : {}),
-    }).eq("id", data.id);
+    const { data: completed, error } = await context.supabase.rpc("update_order_with_completion", {
+      _id: data.id,
+      ...(data.paymentStatus ? { _payment_status: data.paymentStatus } : {}),
+      ...(data.status ? { _status: data.status } : {}),
+    });
     if (error) { console.error("[updateAdminOrder]", error.message); throw new Error("Não foi possível atualizar o pedido."); }
-    return { ok: true };
+    return { ok: true, completed: completed === true, status: data.status };
   });

@@ -51,7 +51,12 @@ function AdminPage() {
   async function change(id: string, patch: { paymentStatus?: PaymentStatus; status?: OrderStatus }) {
     const previous = orders;
     setOrders((all) => all.map((o) => o.id === id ? { ...o, ...(patch.paymentStatus ? { payment_status: patch.paymentStatus } : {}), ...(patch.status ? { status: patch.status } : {}) } : o));
-    try { await update({ data: { id, ...patch } }); } catch { setOrders(previous); setError("Não foi possível salvar a alteração. Tente novamente."); }
+    try {
+      const result = await update({ data: { id, ...patch } });
+      if (result.completed && result.status) {
+        window.__lovableEvents?.track?.("project.order_completed", { status: result.status });
+      }
+    } catch { setOrders(previous); setError("Não foi possível salvar a alteração. Tente novamente."); }
   }
 
   const shown = orders.filter((o) => filter === "todos" || o.payment_status === filter);
