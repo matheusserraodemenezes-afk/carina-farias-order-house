@@ -17,6 +17,7 @@ const trackingQuery = (id: string) => queryOptions({
 });
 
 export const Route = createFileRoute("/pedido/$id")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "Acompanhe seu pedido — Carina Farias" },
     { name: "description", content: "Veja o pagamento e o andamento do seu pedido na Carina Farias." },

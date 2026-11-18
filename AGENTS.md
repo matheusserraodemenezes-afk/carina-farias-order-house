@@ -20,3 +20,4 @@
 - Payment options and statuses live in the pure `src/lib/payments.ts` (manual provider today); future automatic gateways add a provider there plus a webhook that sets payment_status, so checkout never blocks on a gateway.
 - The order admin panel uses authenticated server functions that verify `has_role(admin)` via the user's client; admin access is granted only through `user_roles`.
 - The public order tracking page /pedido/$id looks orders up by their random UUID and returns only status, items and totals, never customer phone or address.
+- The sitemap is router-derived: every route declares staticData.sitemap; only public pages (currently the menu home) are true, private/admin/order pages false.

@@ -10,6 +10,7 @@ import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderSta
 import { brl } from "@/lib/menu";
 
 export const Route = createFileRoute("/admin")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "Painel de pedidos — Carina Farias" },
     { name: "description", content: "Acompanhe pedidos e confirme pagamentos da Carina Farias." },

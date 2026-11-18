@@ -5,7 +5,8 @@ import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/components/account-context";
 import logo from "@/assets/carina-original-logo.jpg.asset.json";
-export const Route = createFileRoute("/auth")({ head: () => ({ meta: [{ title: "Acesso ao histórico — Carina Farias" }, { name: "description", content: "Acesso privado ao perfil e histórico de vendas da Carina Farias." }, { property: "og:title", content: "Acesso ao histórico — Carina Farias" }, { property: "og:description", content: "Entre para consultar suas vendas salvas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Auth });
+export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false }, head: () => ({ meta: [{ title: "Acesso ao histórico — Carina Farias" }, { name: "description", content: "Acesso privado ao perfil e histórico de vendas da Carina Farias." }, { property: "og:title", content: "Acesso ao histórico — Carina Farias" }, { property: "og:description", content: "Entre para consultar suas vendas salvas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: Auth });
 function Auth() {
   const { user } = useAccount(); const navigate = useNavigate(); const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
   useEffect(() => { if (user) { const next = sessionStorage.getItem("authNext") === "/admin" ? "/admin" : "/vendas"; sessionStorage.removeItem("authNext"); navigate({ to: next, replace: true }); } }, [user, navigate]);

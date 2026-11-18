@@ -18,6 +18,7 @@ import { ADDRESS, CONTACT, CONTACT_URL, CATEGORIES, DELIVERY_FEE, MENU, brl, typ
 const logo = logoAsset.url;
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Carina Farias — Churrascaria & Lanchonete no Jurunas" },

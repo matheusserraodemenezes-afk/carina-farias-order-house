@@ -13,6 +13,7 @@ import { analyzeSales } from "@/lib/sales-analysis.functions";
 import { SalesHistory } from "@/components/sales-history";
 
 export const Route = createFileRoute("/vendas")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [
     { title: "Vendas e promoções — Carina Farias" },
     { name: "description", content: "Análise de pedidos, combinações populares e sugestões de promoções da Carina Farias." },
