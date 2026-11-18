@@ -1,4 +1,6 @@
 # Recomendações do cardápio
+- [x] Salvar histórico local por conta e permitir consulta sem internet; testes simples confirmaram leitura, bloqueio de alterações, exclusão e reconexão, sem imagens.
+- [ ] Verificar reabertura completa sem internet no site publicado; depende de publicar e abrir o painel uma vez com conexão.
 - [x] Adicionar alertas de novos pedidos no painel; pedido de teste confirmou alerta, som ativável, navegação e ausência de repetição no celular e computador.
 - [ ] Enviar avisos automáticos para WhatsApp 91980389283; conexão Business recusada, depende de autorização e aprovação de mensagem pela Meta.
 - [x] Adicionar e verificar tela privada de clientes com histórico, último status e filtros de pagamento; acesso administrativo, busca e celular conferidos.
