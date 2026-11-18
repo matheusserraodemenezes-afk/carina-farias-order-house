@@ -15,6 +15,13 @@
       "when": 1794960442579,
       "tag": "0001_owner_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795019922362,
+      "tag": "0002_allow_card_on_delivery_payment",
+      "breakpoints": true
     }
   ]
 }
