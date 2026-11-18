@@ -1,4 +1,6 @@
 # Recomendações do cardápio
+- [ ] Salvar histórico privado por conta, consultar períodos e reutilizar vendas; conferir persistência e isolamento.
+- [ ] Adicionar nome e foto de perfil privados.
 - [x] Colocar imagens ilustrativas realistas por produto no cardápio e carrinho; 64 produtos e água conferidos no celular e computador, sem alterar preços.
 - [x] Adicionar entrada de vendas, métricas e combinações populares; cálculos, celular e aviso de indisponibilidade verificados.
 - [ ] Verificar sugestões de promoções geradas pela IA: bloqueado por payment_required; integração e validação prontas, sem ativar descontos automaticamente.

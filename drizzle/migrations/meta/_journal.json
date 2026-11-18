@@ -1,5 +1,20 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794960405352,
+      "tag": "0000_sales_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794960442579,
+      "tag": "0001_owner_profiles",
+      "breakpoints": true
+    }
+  ]
 }
