@@ -18,7 +18,8 @@ export const ORDER_STATUS_LABELS = { novo: "Novo", em_preparo: "Em preparo", pro
 export type OrderStatus = keyof typeof ORDER_STATUS_LABELS;
 
 // Dados PIX da empresa. Deixe PIX_KEY vazio até a loja confirmar a chave.
-export const PIX_KEY = "";
+export const PIX_KEY = "+5591980389283"; // chave celular, formato exigido pelo BR Code
+export const PIX_KEY_DISPLAY = "(91) 98038-9283 (celular)";
 export const PIX_RECEIVER = "CARINA FARIAS";
 export const PIX_CITY = "BELEM";
 
