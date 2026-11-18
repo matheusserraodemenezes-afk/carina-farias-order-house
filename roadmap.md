@@ -10,3 +10,4 @@
 - [ ] Verificar resposta de IA até o carrinho: bloqueado por payment_required; validação, aviso de indisponibilidade e carrinho manual verificados.
 - [x] Atualizar cardápio, logo e contato conforme os novos arquivos.
 - [ ] Chatbot: depende de créditos regulares para IA; requisitos definidos como várias conversas salvas neste navegador.
+- [ ] PagBank: esclarecer se é só o banco da chave PIX ou integração automática (aguardando resposta)
