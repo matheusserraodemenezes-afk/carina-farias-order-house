@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VendasRouteImport } from './routes/vendas'
+import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AdminVendasRouteImport } from './routes/admin.vendas'
 import { Route as PedidoIdRouteImport } from './routes/pedido.$id'
 
@@ -42,6 +43,11 @@ const VendasRoute = VendasRouteImport.update({
   path: '/vendas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminVendasRoute = AdminVendasRouteImport.update({
   id: '/vendas',
   path: '/vendas',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/vendas': typeof VendasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/vendas': typeof AdminVendasRoute
   '/pedido/$id': typeof PedidoIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/vendas': typeof VendasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/vendas': typeof AdminVendasRoute
   '/pedido/$id': typeof PedidoIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/vendas': typeof VendasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/vendas': typeof AdminVendasRoute
   '/pedido/$id': typeof PedidoIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/vendas'
+    | '/admin/clientes'
     | '/admin/vendas'
     | '/pedido/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/vendas'
+    | '/admin/clientes'
     | '/admin/vendas'
     | '/pedido/$id'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/vendas'
+    | '/admin/clientes'
     | '/admin/vendas'
     | '/pedido/$id'
   fileRoutesById: FileRoutesById
@@ -157,6 +169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VendasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/vendas': {
       id: '/admin/vendas'
       path: '/vendas'
@@ -175,10 +194,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminClientesRoute: typeof AdminClientesRoute
   AdminVendasRoute: typeof AdminVendasRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminClientesRoute: AdminClientesRoute,
   AdminVendasRoute: AdminVendasRoute,
 }
 

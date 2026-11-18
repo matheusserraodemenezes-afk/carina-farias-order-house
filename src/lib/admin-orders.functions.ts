@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { dailySales, dailySalesSchema, type SalesOrder } from "./daily-sales";
+import { customerHistory, type CustomerOrder } from "./customer-history";
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
@@ -26,6 +27,22 @@ export const listAdminOrders = createServerFn({ method: "POST" })
       .limit(100);
     if (error) { console.error("[listAdminOrders]", error.message); throw new Error("Não foi possível carregar os pedidos."); }
     return (data ?? []).map((o) => ({ ...o, number: Number(o.number), subtotal: Number(o.subtotal), delivery_fee: Number(o.delivery_fee), total: Number(o.total), order_items: o.order_items.map((i) => ({ ...i, unit_price: Number(i.unit_price) })) }));
+  });
+
+export const listAdminCustomers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const orders: CustomerOrder[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await context.supabase.from("orders")
+        .select("id, number, customer_id, customer_name, customer_phone, created_at, total, status, payment_status, payment_method, order_items(name, qty, unit_price)")
+        .order("id").range(offset, offset + 999);
+      if (error) { console.error("[listAdminCustomers]", error.message); throw new Error("Não foi possível carregar os clientes."); }
+      orders.push(...(data ?? []).map((o) => ({ ...o, number: Number(o.number), total: Number(o.total), order_items: o.order_items.map((i) => ({ ...i, unit_price: Number(i.unit_price) })) })));
+      if ((data?.length ?? 0) < 1000) break;
+    }
+    return customerHistory(orders);
   });
 
 const updateSchema = z.object({

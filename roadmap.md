@@ -1,4 +1,5 @@
 # Recomendações do cardápio
+- [ ] Adicionar e verificar tela privada de clientes com histórico, último status e filtros de pagamento.
 - [x] Adicionar e conferir relatório administrativo de vendas por dia, valores e status, no celular e computador.
 - [x] Verificar a nota do checkout ao WhatsApp; mensagem completa abre, envio exige confirmação da cliente, aviso e rolagem da nota ajustados.
 - [x] Liberar acesso administrativo para a conta indicada; concessão conferida no registro de permissões.
