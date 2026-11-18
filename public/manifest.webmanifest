@@ -1,0 +1,15 @@
+{
+  "id": "/admin",
+  "name": "Carina Farias — Painel de pedidos",
+  "short_name": "Pedidos Carina",
+  "lang": "pt-BR",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#241F1D",
+  "background_color": "#241F1D",
+  "icons": [
+    { "src": "/panel-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/panel-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
