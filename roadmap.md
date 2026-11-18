@@ -1,6 +1,6 @@
 # Recomendações do cardápio
-- [ ] Adicionar alertas de novos pedidos no painel e verificar com pedido real de teste.
-- [ ] Enviar avisos automáticos para WhatsApp 91980389283; depende de conexão Business e aprovação de mensagem pela Meta.
+- [x] Adicionar alertas de novos pedidos no painel; pedido de teste confirmou alerta, som ativável, navegação e ausência de repetição no celular e computador.
+- [ ] Enviar avisos automáticos para WhatsApp 91980389283; conexão Business recusada, depende de autorização e aprovação de mensagem pela Meta.
 - [x] Adicionar e verificar tela privada de clientes com histórico, último status e filtros de pagamento; acesso administrativo, busca e celular conferidos.
 - [x] Adicionar e conferir relatório administrativo de vendas por dia, valores e status, no celular e computador.
 - [x] Verificar a nota do checkout ao WhatsApp; mensagem completa abre, envio exige confirmação da cliente, aviso e rolagem da nota ajustados.

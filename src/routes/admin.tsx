@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAccount } from "@/components/account-context";
 import { TrackingInsights } from "@/components/tracking-insights";
+import { OrderAlerts } from "@/components/order-alerts";
 import { checkAdmin, listAdminOrders, updateAdminOrder } from "@/lib/admin-orders.functions";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, paymentLabel, type OrderStatus, type PaymentStatus } from "@/lib/payments";
 import { brl } from "@/lib/menu";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const path = useRouterState({ select: (state) => state.location.pathname });
-  return <>{(path === "/admin" || path === "/admin/") && <AdminPage />}<Outlet /></>;
+  return <><OrderAlerts />{(path === "/admin" || path === "/admin/") && <AdminPage />}<Outlet /></>;
 }
 
 type AdminOrder = Awaited<ReturnType<typeof listAdminOrders>>[number];
@@ -52,6 +53,13 @@ function AdminPage() {
     if (!user) { setAdmin(null); return; }
     check().then((r) => { setAdmin(r.admin); if (r.admin) load(); }).catch(() => setAdmin(false));
   }, [user, check, load]);
+
+  useEffect(() => {
+    if (!admin) return;
+    const refresh = () => { void load(); };
+    window.addEventListener("admin:new-orders", refresh);
+    return () => window.removeEventListener("admin:new-orders", refresh);
+  }, [admin, load]);
 
   async function change(id: string, patch: { paymentStatus?: PaymentStatus; status?: OrderStatus }) {
     const previous = orders;

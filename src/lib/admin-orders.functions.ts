@@ -29,6 +29,23 @@ export const listAdminOrders = createServerFn({ method: "POST" })
     return (data ?? []).map((o) => ({ ...o, number: Number(o.number), subtotal: Number(o.subtotal), delivery_fee: Number(o.delivery_fee), total: Number(o.total), order_items: o.order_items.map((i) => ({ ...i, unit_price: Number(i.unit_price) })) }));
   });
 
+export const getNewOrderAlerts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ after: z.number().int().nonnegative().optional() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    if (data.after === undefined) {
+      const result = await context.supabase.from("orders").select("number").order("number", { ascending: false }).limit(1);
+      if (result.error) throw new Error("Não foi possível iniciar os alertas.");
+      return { cursor: Number(result.data?.[0]?.number ?? 0), orders: [] };
+    }
+    const result = await context.supabase.from("orders").select("id, number, total, mode")
+      .gt("number", data.after).order("number").limit(1000);
+    if (result.error) throw new Error("Não foi possível consultar novos pedidos.");
+    const orders = (result.data ?? []).map((order) => ({ ...order, number: Number(order.number), total: Number(order.total) }));
+    return { cursor: orders.at(-1)?.number ?? data.after, orders };
+  });
+
 export const listAdminCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
