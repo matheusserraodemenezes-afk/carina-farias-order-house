@@ -17,3 +17,5 @@
 - Persist sales periods and profiles through authenticated server functions with owner-scoped RLS; the public sales page only fetches private history after sign-in, never in its loader.
 - Compute sales co-occurrence per order and promotion prices from the shared catalog in a pure tested module; AI proposes hypothetical promotions but cannot activate discounts or alter checkout.
 - Keep illustrative product images in a client-safe ID-to-image map separate from catalog business data; menu and cart reuse it without sending media through AI analysis.
+- Payment options and statuses live in the pure `src/lib/payments.ts` (manual provider today); future automatic gateways add a provider there plus a webhook that sets payment_status, so checkout never blocks on a gateway.
+- The order admin panel uses authenticated server functions that verify `has_role(admin)` via the user's client; admin access is granted only through `user_roles`.

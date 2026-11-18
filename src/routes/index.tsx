@@ -12,7 +12,9 @@ import prato from "@/assets/prato.jpg";
 import bebidas from "@/assets/bebidas.jpg";
 import { createOrder } from "@/lib/orders.functions";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { ADDRESS, CONTACT, CONTACT_URL, CARD_BRANDS, CATEGORIES, DELIVERY_FEE, MENU, PAYMENT_METHODS, brl, type Category, type PaymentMethod } from "@/lib/menu";
+import { PAYMENT_OPTIONS, PAYMENT_STATUS_LABELS, paymentLabel, type PaymentId } from "@/lib/payments";
+import { PixPayment } from "@/components/pix-payment";
+import { ADDRESS, CONTACT, CONTACT_URL, CATEGORIES, DELIVERY_FEE, MENU, brl, type Category } from "@/lib/menu";
 const logo = logoAsset.url;
 
 export const Route = createFileRoute("/")({
@@ -29,17 +31,20 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; subtotal: number; fee: number; total: number; date: string; saved: boolean };
+type Order = { id: number; items: { name: string; qty: number; price: number }[]; mode: string; name: string; phone: string; address: string; payment: string; paymentId: PaymentId; changeFor: number | null; subtotal: number; fee: number; total: number; date: string; saved: boolean };
+
+const orderWhatsApp = (order: Order) => whatsappUrl({ number: order.id, mode: order.mode, name: order.name, phone: order.phone, address: order.address, payment: order.payment, paymentStatus: PAYMENT_STATUS_LABELS.pendente, notes: order.changeFor ? `Troco para ${brl(order.changeFor)}` : undefined, items: order.items, subtotal: order.subtotal, fee: order.fee, total: order.total });
 
 function Index() {
   const [cat, setCat] = useState<Category>("Churrasco");
   const [cart, setCart] = useState<Record<string, number>>({});
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"entrega" | "retirada">("entrega");
-  const [payment, setPayment] = useState<PaymentMethod>("pix");
+  const [payment, setPayment] = useState<PaymentId>("pix");
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [order, setOrder] = useState<Order | null>(null);
   const [busy, setBusy] = useState(false);
+  const [change, setChange] = useState("");
   const saveOrder = useServerFn(createOrder);
 
   const add = (id: string, d: number) => setCart((c) => { const n = Math.max(0, (c[id] ?? 0) + d); const x = { ...c, [id]: n }; if (!n) delete x[id]; return x; });
@@ -56,20 +61,26 @@ function Index() {
   const submit = async () => {
     if (busy) return;
     if (!lines.length || !form.name || !form.phone || (mode === "entrega" && !form.address)) return alert("Preencha nome, telefone e endereço.");
+    const changeFor = payment === "dinheiro" && change.trim() ? Number(change.replace(",", ".")) : null;
+    if (changeFor !== null && (!Number.isFinite(changeFor) || changeFor < subtotal + fee)) return alert("Informe um valor de troco maior que o total.");
     setBusy(true);
+    // Abre a aba do WhatsApp já no clique (navegadores bloqueiam abrir depois de esperar o servidor).
+    const waWindow = window.open("", "_blank");
     // Se o registro no sistema falhar, o pedido NÃO se perde: a nota abre igual e o cliente envia pelo WhatsApp.
     let id = Math.floor(1000 + Math.random() * 9000);
     let saved = false;
     try {
-      const result = await saveOrder({ data: { mode, name: form.name, phone: form.phone, address: mode === "entrega" ? form.address : "", payment, items: lines.map((l) => ({ id: l.item.id, qty: l.qty })) } });
+      const result = await saveOrder({ data: { mode, name: form.name, phone: form.phone, address: mode === "entrega" ? form.address : "", payment, changeFor, items: lines.map((l) => ({ id: l.item.id, qty: l.qty })) } });
       id = result.number; saved = true;
     } catch (error) { console.error("Pedido não registrado:", error); }
-    setOrder({
-      id, saved,
+    const placed: Order = {
+      id, saved, paymentId: payment, changeFor,
       items: lines.map((l) => ({ name: l.item.name, qty: l.qty, price: l.item.price })),
-      mode, ...form, payment: PAYMENT_METHODS.find((p) => p.id === payment)?.label ?? "",
+      mode, ...form, payment: paymentLabel(payment),
       subtotal, fee, total: subtotal + fee, date: new Date().toLocaleString("pt-BR"),
-    });
+    };
+    setOrder(placed);
+    if (waWindow) waWindow.location.href = orderWhatsApp(placed);
     setCart({}); setOpen(false); setBusy(false);
   };
 
@@ -157,7 +168,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t px-5 py-8 text-center text-sm text-muted-foreground"><p>© Carina Farias — Churrascaria &amp; Lanchonete</p><p className="mt-2">{ADDRESS}</p><Button asChild variant="outline" className="mt-4"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button><p className="mt-3">Água: consulte disponibilidade e preço pelo WhatsApp.</p><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/vendas">Vendas e promoções</Link></Button></footer>
+      <footer className="border-t px-5 py-8 text-center text-sm text-muted-foreground"><p>© Carina Farias — Churrascaria &amp; Lanchonete</p><p className="mt-2">{ADDRESS}</p><Button asChild variant="outline" className="mt-4"><a href={CONTACT_URL} target="_blank" rel="noopener noreferrer">WhatsApp {CONTACT}</a></Button><p className="mt-3">Água: consulte disponibilidade e preço pelo WhatsApp.</p><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/vendas">Vendas e promoções</Link></Button><Button asChild variant="ghost" size="sm" className="mt-4"><Link to="/admin">Painel de pedidos</Link></Button></footer>
 
       {count > 0 && !open && (
         <button onClick={() => setOpen(true)} className="fixed inset-x-5 bottom-5 z-30 mx-auto max-w-md rounded-full bg-ember py-4 font-bold text-primary-foreground shadow-ember">
@@ -197,15 +208,14 @@ function Index() {
               {mode === "entrega" && <textarea placeholder="Endereço completo" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full rounded-lg border bg-background px-3 py-3" />}
             </div>
 
-            <h3 className="mt-6 font-bold">Pagamento <span className="text-xs font-normal text-muted-foreground">(pago na entrega · online em breve)</span></h3>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              {PAYMENT_METHODS.map((p) => (
-                <button key={p.id} onClick={() => setPayment(p.id)} className={`rounded-lg border py-3 text-sm font-semibold ${payment === p.id ? "border-primary bg-accent" : ""}`}>{p.label}</button>
+            <h3 className="mt-6 font-bold">Pagamento</h3>
+            <div className="mt-2 grid gap-2" role="radiogroup" aria-label="Forma de pagamento">
+              {PAYMENT_OPTIONS.map((p) => (
+                <button key={p.id} type="button" role="radio" aria-checked={payment === p.id} onClick={() => setPayment(p.id)} className={`rounded-lg border px-3 py-3 text-left ${payment === p.id ? "border-primary bg-accent" : ""}`}><span className="block text-sm font-semibold">{p.label}</span><span className="block text-xs text-muted-foreground">{p.description}</span></button>
               ))}
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {CARD_BRANDS.map((b) => <span key={b} className="rounded border px-2 py-0.5 text-xs text-muted-foreground">{b}</span>)}
-            </div>
+            {payment === "pix" && <div className="mt-3"><PixPayment amount={subtotal + fee} /></div>}
+            {payment === "dinheiro" && <input inputMode="decimal" placeholder="Troco para quanto? (opcional)" value={change} onChange={(e) => setChange(e.target.value)} className="mt-3 w-full rounded-lg border bg-background px-3 py-3" />}
 
             <div className="mt-6 space-y-1 text-sm">
               <div className="flex justify-between"><span>Subtotal</span><span>{brl(subtotal)}</span></div>
@@ -236,10 +246,13 @@ function Index() {
               <p>Modalidade: {order.mode.toUpperCase()}</p>
               {order.mode === "entrega" && <p>End.: {order.address}</p>}
               <p>Pagamento: {order.payment}</p>
+              {order.changeFor && <p>Troco para: {brl(order.changeFor)}</p>}
+              <p>Status: {PAYMENT_STATUS_LABELS.pendente.toUpperCase()}</p>
             </div>
+            {order.paymentId === "pix" && <div className="mt-3"><PixPayment amount={order.total} reference={`Pedido ${order.id}`} /></div>}
             {!order.saved && <p role="alert" className="mt-3 text-xs text-destructive">Não conseguimos registrar o pedido no sistema agora. Envie pelo WhatsApp para garantir que a loja receba.</p>}
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <a href={whatsappUrl({ number: order.id, mode: order.mode, name: order.name, phone: order.phone, address: order.address, payment: order.payment, items: order.items, subtotal: order.subtotal, fee: order.fee, total: order.total })} target="_blank" rel="noopener noreferrer" className="col-span-2 rounded-full bg-green-600 py-3 text-center font-bold text-white">📲 Enviar pedido pelo WhatsApp</a>
+              <a href={orderWhatsApp(order)} target="_blank" rel="noopener noreferrer" className="col-span-2 rounded-full bg-green-600 py-3 text-center font-bold text-white">📲 Enviar pedido pelo WhatsApp</a>
               <button onClick={() => window.print()} className="rounded-full bg-ember py-3 font-bold text-primary-foreground">🖨️ Imprimir nota</button>
               <button onClick={() => setOrder(null)} className="rounded-full border py-3 font-semibold">Fechar</button>
             </div>

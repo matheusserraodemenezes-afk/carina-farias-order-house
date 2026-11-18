@@ -39,7 +39,8 @@ export const createOrder = createServerFn({ method: "POST" })
         subtotal: priced.subtotal,
         delivery_fee: priced.fee,
         total: priced.total,
-        notes: data.notes ?? "",
+        payment_status: "pendente", // confirmação manual pela loja no painel
+        notes: [data.notes ?? "", data.payment === "dinheiro" && data.changeFor ? `Troco para R$ ${data.changeFor.toFixed(2).replace(".", ",")}` : ""].filter(Boolean).join(" · "),
       })
       .select("id, number")
       .single();

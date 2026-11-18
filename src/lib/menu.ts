@@ -465,16 +465,6 @@ export const DELIVERY_FEE = 5;
 
 export const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-/* Base para integração futura de pagamentos */
-export type PaymentMethod = "pix" | "credito" | "debito" | "dinheiro";
-export const PAYMENT_METHODS: { id: PaymentMethod; label: string }[] = [
-  { id: "pix", label: "PIX" },
-  { id: "credito", label: "Cartão de Crédito" },
-  { id: "debito", label: "Cartão de Débito" },
-  { id: "dinheiro", label: "Dinheiro" },
-];
-export const CARD_BRANDS = ["Visa", "Mastercard", "Elo", "Hipercard", "American Express"];
-
 export const CONTACT = "+55 91 8038-9283";
 export const CONTACT_URL = "https://wa.me/559180389283";
 export const ADDRESS = "Av. Roberto Camilier, 1521 — entre Rua Nova Segunda e Quintino, Jurunas";

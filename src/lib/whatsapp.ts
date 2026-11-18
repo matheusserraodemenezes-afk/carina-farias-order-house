@@ -11,7 +11,8 @@ export type WhatsAppOrder = {
   subtotal: number;
   fee: number;
   total: number;
-  notes?: string;
+  notes?: string | undefined;
+  paymentStatus?: string;
 };
 
 export function buildWhatsAppMessage(order: WhatsAppOrder): string {
@@ -24,6 +25,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder): string {
   lines.push(`Tipo: ${order.mode === "entrega" ? "Entrega" : "Retirada na loja"}`);
   if (order.mode === "entrega" && order.address) lines.push(`Endereço: ${order.address}`);
   lines.push(`Pagamento: ${order.payment}`);
+  if (order.paymentStatus) lines.push(`Status do pagamento: ${order.paymentStatus}`);
   if (order.notes) lines.push(`Obs: ${order.notes}`);
   return lines.join("\n");
 }
